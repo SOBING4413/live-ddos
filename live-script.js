@@ -1,68 +1,56 @@
 /**
- * live-script.js - Main entry point for Cyber Attack Map (Live Page)
- * 
- * Initializes the 3D globe, data manager, and UI manager.
- * Coordinates data flow between modules.
+ * script.js - Main entry point for Cyber Attack Map
+ * Initializes the globe and starts simulated attack events
  */
 
-import { DataManager } from './data.js';
 import { MapManager } from './map.js';
-import { UIManager } from './ui.js';
+import { generateRandomAttack } from './data.js';
 
-document.addEventListener('DOMContentLoaded', async function () {
-  const mapManager = new MapManager('map-container');
-  const dataManager = new DataManager();
-  const uiManager = new UIManager();
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize the globe (async - loads textures)
+  const map = new MapManager('globe-container');
+  await map.init();
 
-  mapManager.init();
-  uiManager.init();
+  // Stats counters
+  let attackCount = 0;
+  let activeThreats = 0;
 
-  // Globe control events
-  window.addEventListener('globe-zoom', (e) => {
-    if (e.detail.direction === 'in') {
-      mapManager.targetZoom = Math.max(mapManager.minZoom, mapManager.targetZoom - 30);
-    } else {
-      mapManager.targetZoom = Math.min(mapManager.maxZoom, mapManager.targetZoom + 30);
-    }
-  });
+  const attackCountEl = document.getElementById('attack-count');
+  const activeThreatsEl = document.getElementById('active-threats');
 
-  window.addEventListener('globe-reset', () => {
-    mapManager.targetRotation = { x: 0.3, y: -0.5 };
-    mapManager.targetZoom = 280;
-    mapManager.autoRotate = true;
-  });
-
-  dataManager.onNewEvent((event) => {
-    mapManager.addAttackEvent(event);
-    uiManager.addEventToFeed(event);
-  });
-
-  setInterval(() => {
-    uiManager.updateStats(dataManager);
-  }, 800);
-
-  uiManager.showNotification('Initializing 3D Globe — Connecting to threat intelligence feeds...', 'info');
-
-  await dataManager.init();
-
-  uiManager.updateStats(dataManager);
-
-  if (dataManager.isSimulationMode) {
-    uiManager.showNotification(
-      '⚠ SIMULATION MODE — Displaying patterns based on published threat intelligence reports (Check Point, Kaspersky, ENISA). Live API feeds unavailable due to browser CORS restrictions.',
-      'warning'
-    );
-  } else if (dataManager.isLiveMode) {
-    uiManager.showNotification(
-      `✓ Connected to verified source: ${dataManager.dataSource}`,
-      'success'
-    );
+  function updateStats() {
+    attackCount++;
+    activeThreats = Math.min(map.attackArcs.length + map.pulseMarkers.length, 999);
+    if (attackCountEl) attackCountEl.textContent = attackCount.toLocaleString();
+    if (activeThreatsEl) activeThreatsEl.textContent = activeThreats;
   }
 
-  window.addEventListener('beforeunload', () => {
-    dataManager.destroy();
-    mapManager.destroy();
-  });
+  // Launch attacks at random intervals
+  function scheduleAttack() {
+    const delay = 400 + Math.random() * 1200;
+    setTimeout(() => {
+      const event = generateRandomAttack();
+      map.addAttackEvent(event);
+      updateStats();
+      scheduleAttack();
+    }, delay);
+  }
 
-  console.log('Cyber Attack Map 3D Globe initialized. Data source:', dataManager.dataSource);
+  // Start with a burst of initial attacks
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => {
+      const event = generateRandomAttack();
+      map.addAttackEvent(event);
+      updateStats();
+    }, i * 300);
+  }
+
+  // Continue with random attacks
+  setTimeout(scheduleAttack, 3000);
+
+  // Periodic active threats update
+  setInterval(() => {
+    activeThreats = map.attackArcs.length + map.pulseMarkers.length;
+    if (activeThreatsEl) activeThreatsEl.textContent = activeThreats;
+  }, 1000);
 });
