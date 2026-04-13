@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="./logo.png" type="image/png">
+  <title>Documentation - Cyber Attack Map</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./docs-style.css">
+</head>
+
+<body>
+  <div class="scanline-overlay"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="./index.html" class="nav-brand">
+        <img src="./logo.png" alt="Logo" class="nav-logo">
+        <div class="nav-brand-text">
+          <span class="nav-title">Cyber <span class="accent">Attack</span> Map</span>
+          <span class="nav-subtitle">Threat Intelligence Platform</span>
+        </div>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="./index.html" class="nav-link">Home</a>
+        <a href="./live.html" class="nav-link">Live Map</a>
+        <a href="./docs.html" class="nav-link active">Documentation</a>
+      </div>
+      <a href="./live.html" class="nav-cta">
+        <span class="cta-dot"></span>
+        Launch Live Map
+      </a>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Docs Hero -->
+  <section class="docs-hero">
+    <div class="docs-hero-bg">
+      <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112401/2026-04-12/b38624ea-7f5f-48f7-8f0c-04341c3db696.png" alt="Documentation" class="docs-hero-img">
+      <div class="docs-hero-overlay"></div>
+    </div>
+    <div class="docs-hero-content">
+      <div class="section-badge">Technical Documentation</div>
+      <h1>Dokumentasi <span class="accent">Teknis</span> Komprehensif</h1>
+      <p>Panduan referensi lengkap mengenai arsitektur sistem, metodologi pengumpulan data, taksonomi ancaman, dan spesifikasi teknis platform Cyber Attack Map.</p>
+    </div>
+  </section>
+
+  <!-- Docs Layout -->
+  <div class="docs-layout">
+    <!-- Sidebar TOC -->
+    <aside class="docs-sidebar" id="docs-sidebar">
+      <div class="docs-toc">
+        <h4>Daftar Isi</h4>
+        <a href="#overview" class="toc-link active">1. Ikhtisar Sistem</a>
+        <a href="#architecture" class="toc-link">2. Arsitektur Teknis</a>
+        <a href="#data-pipeline" class="toc-link">3. Pipeline Data</a>
+        <a href="#threat-feeds" class="toc-link">4. Threat Intelligence Feeds</a>
+        <a href="#attack-taxonomy" class="toc-link">5. Taksonomi Serangan</a>
+        <a href="#visualization" class="toc-link">6. Engine Visualisasi</a>
+        <a href="#simulation" class="toc-link">7. Mode Simulasi</a>
+        <a href="#glossary" class="toc-link">8. Glosarium</a>
+        <a href="#faq" class="toc-link">9. FAQ</a>
+      </div>
+    </aside>
+
+    <!-- Docs Content -->
+    <main class="docs-content">
+
+      <!-- 1. Overview -->
+      <section id="overview" class="docs-section">
+        <h2><span class="docs-num">01</span> Ikhtisar Sistem</h2>
+        <p>Cyber Attack Map merupakan platform intelijen ancaman siber (<em>Cyber Threat Intelligence Platform</em>) yang mengimplementasikan paradigma <strong>real-time geospatial threat visualization</strong>. Sistem ini dirancang untuk mengagregasi, menormalisasi, dan memvisualisasikan data serangan siber dari multiple authoritative threat intelligence feeds secara simultan.</p>
+
+        <div class="docs-callout docs-callout-info">
+          <div class="callout-icon">&#x2139;&#xFE0F;</div>
+          <div>
+            <strong>Tujuan Platform</strong>
+            <p>Menyediakan situational awareness terhadap lanskap ancaman siber global melalui antarmuka kartografis interaktif yang menampilkan attack vectors, threat indicators, dan statistical analytics secara real-time.</p>
+          </div>
+        </div>
+
+        <h3>Kapabilitas Inti</h3>
+        <ul>
+          <li><strong>Real-Time Threat Telemetry</strong> - Ingesti data streaming dari abuse.ch ecosystem dengan latensi sub-detik</li>
+          <li><strong>Geospatial Attack Mapping</strong> - Rendering kartografis interaktif berbasis Leaflet.js dengan custom Canvas overlay</li>
+          <li><strong>Multi-Source Intelligence Aggregation</strong> - Orkestrasi pengumpulan data dari heterogeneous threat feeds</li>
+          <li><strong>Statistical Threat Analytics</strong> - Dashboard analitik dengan distribusi serangan dan temporal pattern recognition</li>
+          <li><strong>Threat Level Assessment</strong> - Algoritma penilaian tingkat ancaman global berbasis composite scoring</li>
+          <li><strong>High-Severity Alert System</strong> - Notifikasi real-time untuk insiden severity HIGH dan CRITICAL</li>
+        </ul>
+
+        <h3>Spesifikasi Teknis</h3>
+        <table class="docs-table">
+          <thead>
+            <tr><th>Parameter</th><th>Spesifikasi</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Frontend Framework</td><td>Vanilla JavaScript (ES Modules)</td></tr>
+            <tr><td>Map Engine</td><td>Leaflet.js v1.9.4</td></tr>
+            <tr><td>Tile Provider</td><td>CartoDB Dark (No Labels)</td></tr>
+            <tr><td>Rendering Pipeline</td><td>HTML5 Canvas Overlay</td></tr>
+            <tr><td>Data Sources</td><td>abuse.ch (Feodo Tracker, URLhaus, ThreatFox)</td></tr>
+            <tr><td>Max Concurrent Arcs</td><td>120</td></tr>
+            <tr><td>Max Event Buffer</td><td>300 events</td></tr>
+            <tr><td>Stats Update Interval</td><td>800ms</td></tr>
+            <tr><td>Data Refresh Interval</td><td>120 seconds (live mode)</td></tr>
+            <tr><td>Countries Monitored</td><td>30+</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 2. Architecture -->
+      <section id="architecture" class="docs-section">
+        <h2><span class="docs-num">02</span> Arsitektur Teknis</h2>
+        <p>Platform mengimplementasikan arsitektur <strong>modular component-based</strong> dengan separation of concerns yang ketat. Setiap modul bertanggung jawab atas domain fungsional spesifik dan berkomunikasi melalui event-driven interface.</p>
+
+        <h3>Komponen Arsitektural</h3>
+        <div class="docs-arch-grid">
+          <div class="arch-card">
+            <div class="arch-icon">&#x1F4E6;</div>
+            <h4>DataManager</h4>
+            <code>data.js</code>
+            <p>Orchestrator utama untuk data acquisition, normalization, enrichment, dan statistical aggregation. Mengimplementasikan cascading fallback mechanism untuk multiple threat intelligence feeds.</p>
+          </div>
+          <div class="arch-card">
+            <div class="arch-icon">&#x1F5FA;&#xFE0F;</div>
+            <h4>MapManager</h4>
+            <code>map.js</code>
+            <p>Pengelola Leaflet.js map instance dengan custom Canvas overlay untuk rendering attack arcs. Mengimplementasikan Bezier curve interpolation dan pulse marker animation system.</p>
+          </div>
+          <div class="arch-card">
+            <div class="arch-icon">&#x1F5A5;&#xFE0F;</div>
+            <h4>UIManager</h4>
+            <code>ui.js</code>
+            <p>Controller untuk seluruh DOM updates termasuk event feed, statistics counters, sidebar management, threat level indicator, dan notification system.</p>
+          </div>
+          <div class="arch-card">
+            <div class="arch-icon">&#x2699;&#xFE0F;</div>
+            <h4>Entry Point</h4>
+            <code>live-script.js</code>
+            <p>Orchestrator yang menginisialisasi ketiga manager, menghubungkan event listeners, dan mengkoordinasikan data flow antar komponen.</p>
+          </div>
+        </div>
+
+        <h3>Data Flow Architecture</h3>
+        <div class="docs-code-block">
+          <div class="code-header">
+            <span class="code-lang">FLOW</span>
+            <span>Data Processing Pipeline</span>
+          </div>
+          <pre><code>Threat Intelligence Feeds (Feodo / URLhaus / ThreatFox)
+         |
+         v
+    CORS Proxy Layer (allorigins / corsproxy.io)
+         |
+         v
+    DataManager.init() -- Cascading Fallback
+         |
+         v
+    Raw Data Normalization + Enrichment
+         |
+         v
+    Unified Event Schema
+         |
+    +----+----+
+    |         |
+    v         v
+MapManager  UIManager
+(Canvas)    (DOM Updates)</code></pre>
+        </div>
+      </section>
+
+      <!-- 3. Data Pipeline -->
+      <section id="data-pipeline" class="docs-section">
+        <h2><span class="docs-num">03</span> Pipeline Data</h2>
+        <p>Pipeline pemrosesan data mengimplementasikan arsitektur <strong>multi-stage ETL</strong> (Extract, Transform, Load) dengan cascading fallback mechanism untuk memastikan kontinuitas layanan.</p>
+
+        <h3>Stage 1: Data Acquisition</h3>
+        <p>Sistem menginisiasi koneksi ke threat intelligence APIs melalui CORS-compliant proxy infrastructure. Implementasi menggunakan cascading priority:</p>
+        <ol>
+          <li><strong>Feodo Tracker</strong> (Primary) - Botnet C2 server intelligence</li>
+          <li><strong>URLhaus</strong> (Secondary) - Malware URL intelligence</li>
+          <li><strong>ThreatFox</strong> (Tertiary) - IOC database</li>
+          <li><strong>Simulation Mode</strong> (Fallback) - Statistical distribution dari published reports</li>
+        </ol>
+        <p>Setiap endpoint diuji dengan timeout 8-10 detik sebelum failover ke sumber alternatif. Direct fetch dicoba terlebih dahulu, diikuti oleh CORS proxy (allorigins.win, corsproxy.io).</p>
+
+        <h3>Stage 2: Normalization</h3>
+        <p>Raw data dari heterogeneous sources dinormalisasi ke unified event schema:</p>
+        <div class="docs-code-block">
+          <div class="code-header">
+            <span class="code-lang">JSON</span>
+            <span>Unified Event Schema</span>
+          </div>
+          <pre><code>{
+  "id": "feodo-192.0.2.1-1712966400000-a1b2c",
+  "timestamp": "2026-04-12T12:00:00.000Z",
+  "attackType": "malware | ddos | phishing | intrusion | exploit | scanning",
+  "source": {
+    "country": "CN",
+    "countryName": "China",
+    "countryFlag": "flag_emoji",
+    "city": "Beijing",
+    "lat": 39.9042,
+    "lng": 116.4074,
+    "ip": "192.0.2.1"
+  },
+  "target": {
+    "country": "US",
+    "countryName": "United States",
+    "countryFlag": "flag_emoji",
+    "city": "New York",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "port": 443
+  },
+  "details": "Descriptive text about the threat",
+  "severity": "low | medium | high | critical",
+  "dataSource": "Feodo Tracker (abuse.ch)",
+  "indicatorType": "C2 Server | Malware URL | IOC",
+  "verified": true
+}</code></pre>
+        </div>
+
+        <h3>Stage 3: Enrichment</h3>
+        <p>Proses enrichment mencakup:</p>
+        <ul>
+          <li><strong>Geolocation Resolution</strong> - Country code mapping ke koordinat kota menggunakan pre-defined CITY_COORDS database (30+ negara, 50+ kota)</li>
+          <li><strong>Attack Type Classification</strong> - Mapping malware family ke attack category (e.g., Emotet = malware, Dridex = malware)</li>
+          <li><strong>Severity Scoring</strong> - Penentuan severity berdasarkan threat indicator (online C2 = critical, offline = high)</li>
+          <li><strong>ASN Enrichment</strong> - Penambahan Autonomous System Number dan nama dari Feodo Tracker data</li>
+        </ul>
+
+        <h3>Stage 4: Statistical Aggregation</h3>
+        <p>Kalkulasi real-time metrics menggunakan sliding window algorithm:</p>
+        <ul>
+          <li><strong>Attacks Per Minute (APM)</strong> - Total attacks / elapsed minutes</li>
+          <li><strong>Events Per Second (EPS)</strong> - Events dalam 10-detik window / 10</li>
+          <li><strong>Threat Level</strong> - Composite score: min(APM * 2, 40) + highSeverityRatio * 60</li>
+          <li><strong>Country Distribution</strong> - Running counters per source/target country</li>
+          <li><strong>Route Frequency</strong> - Source-to-target country pair counting</li>
+        </ul>
+      </section>
+
+      <!-- 4. Threat Feeds -->
+      <section id="threat-feeds" class="docs-section">
+        <h2><span class="docs-num">04</span> Threat Intelligence Feeds</h2>
+        <p>Platform mengagregasi data dari ekosistem <strong>abuse.ch</strong>, sebuah organisasi riset keamanan siber yang diakui secara global dan beroperasi di bawah naungan Bern University of Applied Sciences, Swiss.</p>
+
+        <h3>Feodo Tracker</h3>
+        <div class="docs-callout docs-callout-warning">
+          <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+          <div>
+            <strong>Primary Data Source</strong>
+            <p>Feodo Tracker merupakan sumber data prioritas utama yang menyediakan IP blocklist dari botnet C2 servers.</p>
+          </div>
+        </div>
+        <p>Feodo Tracker mengidentifikasi dan melacak infrastruktur Command and Control (C2) dari botnet families termasuk:</p>
+        <ul>
+          <li><strong>Emotet</strong> - Banking trojan yang berevolusi menjadi malware distribution platform</li>
+          <li><strong>Dridex</strong> - Banking trojan dengan kemampuan credential theft</li>
+          <li><strong>TrickBot</strong> - Modular trojan untuk reconnaissance dan lateral movement</li>
+          <li><strong>QakBot (Qbot)</strong> - Banking trojan dengan worm-like propagation</li>
+          <li><strong>IcedID (BokBot)</strong> - Banking trojan yang sering digunakan sebagai initial access broker</li>
+          <li><strong>Pikabot</strong> - Loader malware yang muncul sebagai pengganti QakBot</li>
+        </ul>
+        <p><strong>Endpoint:</strong> <code>https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json</code></p>
+        <p><strong>Data Fields:</strong> ip_address, port, status, hostname, as_number, as_name, country, first_seen, last_online, malware</p>
+
+        <h3>URLhaus</h3>
+        <p>URLhaus merupakan repository URL yang digunakan untuk distribusi malware, dikurasi oleh komunitas keamanan global. Platform ini mengidentifikasi dan melacak:</p>
+        <ul>
+          <li>Malware distribution sites</li>
+          <li>Payload hosting infrastructure</li>
+          <li>Phishing landing pages</li>
+          <li>Exploit kit landing pages</li>
+        </ul>
+        <p><strong>Endpoint:</strong> <code>https://urlhaus-api.abuse.ch/v1/urls/recent/limit/20/</code></p>
+        <p><strong>Data Fields:</strong> id, url, url_status, host, date_added, threat, tags, country</p>
+
+        <h3>ThreatFox</h3>
+        <p>ThreatFox merupakan platform berbagi Indicators of Compromise (IOC) yang memfasilitasi kolaborasi komunitas keamanan siber. IOC types yang didukung:</p>
+        <ul>
+          <li><strong>IP:port</strong> - C2 server addresses</li>
+          <li><strong>Domain</strong> - Malicious domain names</li>
+          <li><strong>URL</strong> - Malware distribution URLs</li>
+          <li><strong>File Hash</strong> - MD5/SHA256 hashes of malware samples</li>
+        </ul>
+        <p><strong>Endpoint:</strong> <code>https://threatfox.abuse.ch/export/json/recent/</code></p>
+      </section>
+
+      <!-- 5. Attack Taxonomy -->
+      <section id="attack-taxonomy" class="docs-section">
+        <h2><span class="docs-num">05</span> Taksonomi Serangan</h2>
+        <p>Sistem mengklasifikasikan ancaman ke dalam enam kategori primer berdasarkan framework <strong>MITRE ATT&amp;CK</strong> dan <strong>ENISA Threat Landscape Report</strong>.</p>
+
+        <div class="taxonomy-detail">
+          <h3 style="color: #ff3366;">DDoS (Distributed Denial of Service)</h3>
+          <p><strong>Definisi:</strong> Serangan yang bertujuan membuat layanan tidak tersedia dengan membanjiri target dengan volume traffic yang melebihi kapasitas infrastruktur.</p>
+          <p><strong>Sub-kategori:</strong></p>
+          <ul>
+            <li><strong>Volumetric Attacks</strong> - SYN flood, UDP flood, ICMP flood</li>
+            <li><strong>Protocol Attacks</strong> - SYN/ACK reflection, Ping of Death</li>
+            <li><strong>Application Layer</strong> - HTTP/2 Rapid Reset (CVE-2023-44487), Slowloris, RUDY</li>
+            <li><strong>Amplification</strong> - DNS amplification, NTP amplification, SSDP amplification</li>
+          </ul>
+          <p><strong>Common Ports:</strong> 80, 443, 53, 8080, 3389</p>
+          <p><strong>Distribution Weight:</strong> 10% (ENISA 2024)</p>
+        </div>
+
+        <div class="taxonomy-detail">
+          <h3 style="color: #ff8c00;">Malware Distribution</h3>
+          <p><strong>Definisi:</strong> Proliferasi perangkat lunak berbahaya yang dirancang untuk mengkompromikan confidentiality, integrity, atau availability dari sistem target.</p>
+          <p><strong>Sub-kategori:</strong></p>
+          <ul>
+            <li><strong>Ransomware</strong> - LockBit, BlackCat/ALPHV, Cl0p, Royal</li>
+            <li><strong>Banking Trojans</strong> - Emotet, Dridex, QakBot, IcedID</li>
+            <li><strong>Infostealers</strong> - RedLine, Raccoon, Vidar, Lumma</li>
+            <li><strong>Botnet Infrastructure</strong> - C2 servers, loader malware</li>
+            <li><strong>Cryptominers</strong> - Unauthorized cryptocurrency mining</li>
+          </ul>
+          <p><strong>Common Ports:</strong> 445, 139, 3389, 22, 8443</p>
+          <p><strong>Distribution Weight:</strong> 28% (ENISA 2024)</p>
+        </div>
+
+        <div class="taxonomy-detail">
+          <h3 style="color: #ffd700;">Phishing &amp; Social Engineering</h3>
+          <p><strong>Definisi:</strong> Teknik manipulasi psikologis yang mengeksploitasi human vulnerability untuk mendapatkan akses tidak terotorisasi ke informasi sensitif.</p>
+          <p><strong>Sub-kategori:</strong></p>
+          <ul>
+            <li><strong>Credential Harvesting</strong> - Fake login pages, keyloggers</li>
+            <li><strong>Business Email Compromise (BEC)</strong> - CEO fraud, invoice fraud</li>
+            <li><strong>Spear Phishing</strong> - Targeted attacks pada individu spesifik</li>
+            <li><strong>OAuth Consent Phishing</strong> - Abuse of OAuth authorization flows</li>
+            <li><strong>Quishing</strong> - QR code-based phishing</li>
+          </ul>
+          <p><strong>Common Ports:</strong> 80, 443, 25, 587, 993</p>
+          <p><strong>Distribution Weight:</strong> 22% (ENISA 2024)</p>
+        </div>
+
+        <div class="taxonomy-detail">
+          <h3 style="color: #00bfff;">Network Intrusion</h3>
+          <p><strong>Definisi:</strong> Upaya akses tidak terotorisasi ke sistem atau jaringan melalui eksploitasi authentication mechanisms atau network protocols.</p>
+          <p><strong>Sub-kategori:</strong></p>
+          <ul>
+            <li><strong>Brute Force</strong> - Password spraying, credential stuffing</li>
+            <li><strong>Lateral Movement</strong> - Pass-the-hash, pass-the-ticket</li>
+            <li><strong>Privilege Escalation</strong> - Local/domain privilege escalation</li>
+            <li><strong>APT Campaigns</strong> - State-sponsored persistent access</li>
+          </ul>
+          <p><strong>Common Ports:</strong> 22, 3389, 5900, 23, 21</p>
+          <p><strong>Distribution Weight:</strong> 18% (ENISA 2024)</p>
+        </div>
+
+        <div class="taxonomy-detail">
+          <h3 style="color: #a855f7;">Vulnerability Exploitation</h3>
+          <p><strong>Definisi:</strong> Eksploitasi kerentanan perangkat lunak yang terdokumentasi (CVE) atau zero-day untuk mendapatkan unauthorized access atau code execution.</p>
+          <p><strong>Notable CVEs yang Dimonitor:</strong></p>
+          <ul>
+            <li><strong>CVE-2024-3400</strong> - Palo Alto PAN-OS command injection (CVSS 10.0)</li>
+            <li><strong>CVE-2024-21887</strong> - Ivanti Connect Secure command injection</li>
+            <li><strong>CVE-2023-46805</strong> - Ivanti Connect Secure authentication bypass</li>
+            <li><strong>CVE-2021-44228</strong> - Log4Shell (Apache Log4j) - residual exploitation</li>
+            <li><strong>CVE-2023-34362</strong> - MOVEit Transfer SQL injection</li>
+          </ul>
+          <p><strong>Common Ports:</strong> 80, 443, 8080, 8443, 9200</p>
+          <p><strong>Distribution Weight:</strong> 14% (ENISA 2024)</p>
+        </div>
+
+        <div class="taxonomy-detail">
+          <h3 style="color: #00ff88;">Reconnaissance &amp; Scanning</h3>
+          <p><strong>Definisi:</strong> Aktivitas pengintaian jaringan yang merupakan fase initial dari cyber kill chain, mendahului serangan aktif.</p>
+          <p><strong>Sub-kategori:</strong></p>
+          <ul>
+            <li><strong>Port Scanning</strong> - TCP SYN scan, UDP scan, FIN scan</li>
+            <li><strong>Service Enumeration</strong> - Banner grabbing, version detection</li>
+            <li><strong>Vulnerability Assessment</strong> - Automated vulnerability scanning</li>
+            <li><strong>Network Topology Mapping</strong> - Traceroute, DNS enumeration</li>
+          </ul>
+          <p><strong>Common Ports:</strong> 22, 80, 443, 3306, 5432</p>
+          <p><strong>Distribution Weight:</strong> 8% (ENISA 2024)</p>
+        </div>
+      </section>
+
+      <!-- 6. Visualization -->
+      <section id="visualization" class="docs-section">
+        <h2><span class="docs-num">06</span> Engine Visualisasi</h2>
+        <p>Sistem visualisasi mengimplementasikan <strong>dual-layer rendering architecture</strong> yang menggabungkan Leaflet.js tile layer dengan custom HTML5 Canvas overlay untuk performa optimal.</p>
+
+        <h3>Map Configuration</h3>
+        <ul>
+          <li><strong>Center:</strong> [20, 0] (Atlantic-centered global view)</li>
+          <li><strong>Zoom Range:</strong> 2 - 8</li>
+          <li><strong>Tile Layer:</strong> CartoDB Dark No Labels</li>
+          <li><strong>World Copy Jump:</strong> Enabled</li>
+          <li><strong>Max Bounds:</strong> [-85, -Infinity] to [85, Infinity]</li>
+        </ul>
+
+        <h3>Attack Arc Rendering</h3>
+        <p>Setiap serangan divisualisasikan sebagai animated arc menggunakan <strong>quadratic Bezier curve</strong> pada Canvas overlay:</p>
+        <ul>
+          <li><strong>Curve Control Point:</strong> Perpendicular offset dari midpoint, curvature = min(distance * 0.35, 180px)</li>
+          <li><strong>Travel Animation:</strong> easeOutExpo timing function, duration 2200-4000ms</li>
+          <li><strong>Trail Effect:</strong> 25-segment gradient trail with progressive opacity</li>
+          <li><strong>Moving Head:</strong> White core dot (3-4px) with colored glow (8-12px)</li>
+          <li><strong>Impact Burst:</strong> Expanding ring animation at target on arrival</li>
+          <li><strong>Fade Duration:</strong> 2000ms with easeInOutCubic</li>
+        </ul>
+
+        <h3>Pulse Markers</h3>
+        <p>Marker pulsasi ditampilkan pada source dan target coordinates:</p>
+        <ul>
+          <li><strong>Source Marker:</strong> 6px core, 24px pulse ring</li>
+          <li><strong>Target Marker:</strong> 8-12px core (severity-scaled), 32-40px pulse ring</li>
+          <li><strong>Animation:</strong> pulse-expand keyframe, 2.5s duration, dual-ring with 0.3s stagger</li>
+          <li><strong>Lifetime:</strong> 4000ms auto-removal</li>
+        </ul>
+
+        <h3>Performance Optimization</h3>
+        <ul>
+          <li>Maximum 120 concurrent arcs (oldest removed first)</li>
+          <li>Device Pixel Ratio (DPR) aware canvas scaling</li>
+          <li>requestAnimationFrame-based render loop</li>
+          <li>Automatic arc cleanup when travel + fade duration exceeded</li>
+          <li>Minimum distance threshold (5px) to skip rendering micro-arcs</li>
+        </ul>
+      </section>
+
+      <!-- 7. Simulation -->
+      <section id="simulation" class="docs-section">
+        <h2><span class="docs-num">07</span> Mode Simulasi</h2>
+        <p>Ketika live API feeds tidak tersedia (umumnya karena browser CORS restrictions), sistem mengaktifkan <strong>Simulation Mode</strong> yang menggunakan distribusi statistik dari laporan keamanan siber terpublikasi.</p>
+
+        <div class="docs-callout docs-callout-warning">
+          <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+          <div>
+            <strong>Transparansi Data</strong>
+            <p>Semua data simulasi dilabeli secara eksplisit dengan prefix [SIM]. Platform tidak pernah memfabrikasi data dan mempresentasikannya sebagai data real. Status "SIMULATION" ditampilkan secara prominent di header dan sidebar.</p>
+          </div>
+        </div>
+
+        <h3>Sumber Distribusi Statistik</h3>
+        <table class="docs-table">
+          <thead>
+            <tr><th>Laporan</th><th>Parameter yang Digunakan</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Check Point 2024 Cyber Security Report</td><td>Source country distribution weights</td></tr>
+            <tr><td>Kaspersky Security Bulletin 2024</td><td>Target country distribution weights</td></tr>
+            <tr><td>ENISA Threat Landscape 2024</td><td>Attack type distribution ratios</td></tr>
+            <tr><td>Fortinet Global Threat Report 2024</td><td>Severity distribution percentages</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Distribusi Weights</h3>
+        <p><strong>Source Countries (Top 10):</strong> China (18%), US (14%), Russia (12%), India (8%), Brazil (6%), South Korea (5%), Germany (4%), Vietnam (4%), Indonesia (4%), Iran (3%)</p>
+        <p><strong>Target Countries (Top 10):</strong> US (22%), UK (8%), Germany (7%), France (6%), Japan (5%), India (5%), Australia (4%), Canada (4%), Brazil (4%), South Korea (3%)</p>
+        <p><strong>Attack Types:</strong> Malware (28%), Phishing (22%), Intrusion (18%), Exploit (14%), DDoS (10%), Scanning (8%)</p>
+        <p><strong>Severity:</strong> Medium (40%), High (30%), Low (20%), Critical (10%)</p>
+
+        <h3>IP Address Handling</h3>
+        <p>Dalam mode simulasi, sistem menggunakan IP addresses dari <strong>RFC 5737 documentation ranges</strong> yang secara eksplisit dialokasikan untuk dokumentasi dan contoh:</p>
+        <ul>
+          <li><code>192.0.2.0/24</code> (TEST-NET-1)</li>
+          <li><code>198.51.100.0/24</code> (TEST-NET-2)</li>
+          <li><code>203.0.113.0/24</code> (TEST-NET-3)</li>
+        </ul>
+        <p>IP addresses ini tidak pernah di-assign ke real hosts, memastikan tidak ada entitas nyata yang salah diidentifikasi.</p>
+
+        <h3>Event Generation</h3>
+        <p>Simulation events dihasilkan dengan interval random 800-3300ms menggunakan weighted random selection algorithm. Initial batch sebanyak 15 events dihasilkan saat inisialisasi untuk immediate visual feedback.</p>
+      </section>
+
+      <!-- 8. Glossary -->
+      <section id="glossary" class="docs-section">
+        <h2><span class="docs-num">08</span> Glosarium</h2>
+        <div class="glossary-grid">
+          <div class="glossary-item">
+            <dt>APT (Advanced Persistent Threat)</dt>
+            <dd>Serangan siber yang dilakukan oleh aktor dengan kemampuan tinggi (sering kali state-sponsored) yang mempertahankan akses tidak terotorisasi ke jaringan target dalam jangka waktu yang lama.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>C2 (Command and Control)</dt>
+            <dd>Infrastruktur server yang digunakan oleh threat actors untuk mengirim perintah ke dan menerima data dari sistem yang telah dikompromikan (bots).</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>CORS (Cross-Origin Resource Sharing)</dt>
+            <dd>Mekanisme keamanan browser yang membatasi HTTP requests dari satu origin ke origin yang berbeda. Menjadi tantangan utama dalam mengakses threat intelligence APIs langsung dari browser.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>CVE (Common Vulnerabilities and Exposures)</dt>
+            <dd>Sistem identifikasi standar untuk kerentanan keamanan yang dikelola oleh MITRE Corporation. Setiap CVE memiliki ID unik (e.g., CVE-2024-3400).</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>CVSS (Common Vulnerability Scoring System)</dt>
+            <dd>Framework standar untuk menilai severity kerentanan keamanan pada skala 0.0-10.0.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>IOC (Indicator of Compromise)</dt>
+            <dd>Artefak forensik yang mengindikasikan bahwa sistem telah dikompromikan. Termasuk IP addresses, domain names, file hashes, dan URLs.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>MITRE ATT&amp;CK</dt>
+            <dd>Knowledge base dan framework yang mendokumentasikan taktik, teknik, dan prosedur (TTPs) yang digunakan oleh threat actors berdasarkan observasi dunia nyata.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Threat Intelligence</dt>
+            <dd>Informasi berbasis bukti tentang ancaman siber yang telah dianalisis dan dikontekstualisasi untuk mendukung pengambilan keputusan keamanan.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Zero-Day</dt>
+            <dd>Kerentanan keamanan yang belum diketahui oleh vendor perangkat lunak dan belum memiliki patch. Disebut "zero-day" karena vendor memiliki nol hari untuk memperbaiki sebelum eksploitasi.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Kill Chain</dt>
+            <dd>Model yang mendeskripsikan tahapan serangan siber: Reconnaissance, Weaponization, Delivery, Exploitation, Installation, C2, Actions on Objectives.</dd>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. FAQ -->
+      <section id="faq" class="docs-section">
+        <h2><span class="docs-num">09</span> FAQ (Frequently Asked Questions)</h2>
+
+        <div class="faq-item">
+          <h3>Apakah data yang ditampilkan merupakan serangan siber nyata?</h3>
+          <p>Tergantung pada mode operasi. Dalam <strong>Live Mode</strong>, data bersumber dari threat intelligence feeds terverifikasi (abuse.ch) yang menampilkan lokasi real C2 servers dan malware URLs. Dalam <strong>Simulation Mode</strong>, data dihasilkan berdasarkan distribusi statistik dari laporan keamanan siber terpublikasi dan dilabeli secara eksplisit.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Mengapa platform sering masuk ke Simulation Mode?</h3>
+          <p>Browser memiliki kebijakan CORS (Cross-Origin Resource Sharing) yang membatasi akses langsung ke API eksternal. Threat intelligence APIs dari abuse.ch tidak menyediakan CORS headers, sehingga akses harus melalui proxy. Jika semua proxy tidak tersedia, sistem fallback ke simulation mode.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Bagaimana cara mendapatkan Live Mode secara konsisten?</h3>
+          <p>Untuk akses live data yang konsisten, disarankan untuk mengimplementasikan server-side proxy yang mem-forward requests ke abuse.ch APIs. Ini menghilangkan CORS restrictions karena server-to-server communication tidak tunduk pada same-origin policy.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Apakah IP addresses yang ditampilkan merupakan IP asli?</h3>
+          <p>Dalam Live Mode, IP addresses dari Feodo Tracker merupakan IP asli dari botnet C2 servers. Dalam Simulation Mode, IP addresses diambil dari RFC 5737 documentation ranges (192.0.2.x, 198.51.100.x, 203.0.113.x) yang tidak di-assign ke real hosts.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Seberapa akurat distribusi geografis serangan?</h3>
+          <p>Dalam Live Mode, lokasi source (C2 server) akurat berdasarkan geolocation data. Target distribution menggunakan weighted random berdasarkan published threat reports karena Feodo Tracker hanya menyediakan lokasi C2, bukan target. Dalam Simulation Mode, seluruh distribusi berdasarkan laporan Check Point, Kaspersky, ENISA, dan Fortinet.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Apakah platform ini dapat digunakan untuk keperluan profesional?</h3>
+          <p>Platform ini dirancang untuk keperluan <strong>edukasi dan situational awareness</strong>. Untuk keperluan profesional threat intelligence, disarankan untuk menggunakan platform komersial seperti Recorded Future, Mandiant Advantage, atau CrowdStrike Falcon Intelligence yang menyediakan data yang lebih komprehensif dan actionable.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <img src="./logo.png" alt="Logo" class="footer-logo">
+            <span class="footer-title">Cyber Attack Map</span>
+          </div>
+          <p>Platform intelijen ancaman siber real-time yang mengagregasi data dari sumber terverifikasi untuk memvisualisasikan lanskap ancaman global.</p>
+        </div>
+        <div class="footer-links-group">
+          <h4>Navigasi</h4>
+          <a href="./index.html">Beranda</a>
+          <a href="./live.html">Live Map</a>
+          <a href="./docs.html">Dokumentasi</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>Sumber Data</h4>
+          <a href="https://feodotracker.abuse.ch/" target="_blank" rel="noopener">Feodo Tracker</a>
+          <a href="https://urlhaus.abuse.ch/" target="_blank" rel="noopener">URLhaus</a>
+          <a href="https://threatfox.abuse.ch/" target="_blank" rel="noopener">ThreatFox</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>Referensi</h4>
+          <a href="https://attack.mitre.org/" target="_blank" rel="noopener">MITRE ATT&amp;CK</a>
+          <a href="https://www.enisa.europa.eu/" target="_blank" rel="noopener">ENISA</a>
+          <a href="https://nvd.nist.gov/" target="_blank" rel="noopener">NIST NVD</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Cyber Attack Map. Platform intelijen ancaman siber untuk keperluan edukasi dan monitoring.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./docs-script.js"></script>
+</body>
+
+</html>
