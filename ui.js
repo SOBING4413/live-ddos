@@ -33,6 +33,7 @@ export class UIManager {
     this.eventsPerSecEl = document.getElementById('events-per-sec');
     this.threatLevelFillEl = document.getElementById('threat-level-fill');
     this.threatLevelDescEl = document.getElementById('threat-level-desc');
+    this.dataDisclaimerEl = document.getElementById('data-disclaimer');
     this.maxFeedItems = 60;
     this.sidebarOpen = true;
     this.previousTotal = 0;
@@ -93,6 +94,11 @@ export class UIManager {
     const severity = event.severity || 'medium';
     const severityLabel = severity.toUpperCase();
 
+    // Show verified badge for live data
+    const verifiedBadge = event.verified
+      ? '<span class="event-verified" title="Data from verified threat intelligence source">✓ VERIFIED</span>'
+      : '<span class="event-simulated" title="Simulated based on published threat reports">SIM</span>';
+
     this.feedItemCount++;
 
     const eventEl = document.createElement('div');
@@ -102,6 +108,7 @@ export class UIManager {
         <span class="event-type" style="color: ${type.color};">
           ${type.icon} ${type.label}
           <span class="event-severity ${severity}">${severityLabel}</span>
+          ${verifiedBadge}
         </span>
         <span class="event-time">${dateStr} ${timeStr}</span>
       </div>
@@ -121,10 +128,10 @@ export class UIManager {
           </div>
         ` : ''}
         ${event.target.port ? `<span class="event-port">Port ${event.target.port}</span>` : ''}
-        ${event.indicatorType && event.indicatorType !== 'demo' ? `<span class="event-port" style="color: var(--accent-cyan); background: rgba(0, 229, 255, 0.1);">${event.indicatorType}</span>` : ''}
+        ${event.indicatorType && event.indicatorType !== 'simulation' ? `<span class="event-port" style="color: var(--accent-cyan); background: rgba(0, 229, 255, 0.1);">${event.indicatorType}</span>` : ''}
       </div>
       <div class="event-details">${this.escapeHtml(event.details)}</div>
-      <div class="event-source-label">Source: ${event.dataSource}${event.pulseId ? ` (Pulse #${event.pulseId})` : ''}</div>
+      <div class="event-source-label">Source: ${event.dataSource}</div>
     `;
 
     this.eventFeedEl.insertBefore(eventEl, this.eventFeedEl.firstChild);
@@ -202,8 +209,8 @@ export class UIManager {
       this.lastUpdateEl.textContent = dataManager.lastFetchTime.toLocaleTimeString('en-US', {
         hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
       });
-    } else if (this.lastUpdateEl && dataManager.isDemoMode) {
-      this.lastUpdateEl.textContent = 'Real-time (Demo)';
+    } else if (this.lastUpdateEl && dataManager.isSimulationMode) {
+      this.lastUpdateEl.textContent = 'Real-time (Simulation)';
     }
 
     // Threat level
@@ -341,8 +348,8 @@ export class UIManager {
     }
 
     if (this.dataSourceShortEl) {
-      if (dataManager.isDemoMode) {
-        this.dataSourceShortEl.textContent = '⚠ Demo Mode - Sample Data Only';
+      if (dataManager.isSimulationMode) {
+        this.dataSourceShortEl.textContent = '⚠ Simulation — Based on published reports';
         this.dataSourceShortEl.style.color = '#ffd700';
       } else if (dataManager.isLiveMode) {
         this.dataSourceShortEl.textContent = '● Live: ' + dataManager.dataSource;
@@ -354,9 +361,9 @@ export class UIManager {
     }
 
     if (this.dataStatusEl) {
-      if (dataManager.isDemoMode) {
+      if (dataManager.isSimulationMode) {
         this.dataStatusEl.className = 'data-status demo';
-        this.dataStatusEl.innerHTML = '<span class="status-dot"></span><span class="status-text">DEMO MODE</span>';
+        this.dataStatusEl.innerHTML = '<span class="status-dot"></span><span class="status-text">SIMULATION</span>';
       } else if (dataManager.isLiveMode) {
         this.dataStatusEl.className = 'data-status live';
         this.dataStatusEl.innerHTML = '<span class="status-dot"></span><span class="status-text">LIVE DATA</span>';
@@ -367,7 +374,16 @@ export class UIManager {
     }
 
     if (this.accuracyNoticeEl) {
-      this.accuracyNoticeEl.style.display = dataManager.isDemoMode ? 'flex' : 'none';
+      this.accuracyNoticeEl.style.display = dataManager.isSimulationMode ? 'flex' : 'none';
+    }
+
+    // Update disclaimer text based on mode
+    if (this.dataDisclaimerEl) {
+      if (dataManager.isLiveMode) {
+        this.dataDisclaimerEl.textContent = 'Data sourced from verified threat intelligence providers (abuse.ch). C2 server locations are real; target distributions are based on published threat reports.';
+      } else if (dataManager.isSimulationMode) {
+        this.dataDisclaimerEl.textContent = 'SIMULATION MODE: All data patterns are based on published threat intelligence reports from Check Point, Kaspersky, ENISA, and Fortinet. No real attack data is displayed. IPs shown are from RFC 5737 documentation ranges (192.0.2.x, 198.51.100.x, 203.0.113.x).';
+      }
     }
   }
 
@@ -425,7 +441,7 @@ export class UIManager {
 
     setTimeout(() => {
       banner.classList.remove('visible');
-    }, 7000);
+    }, 8000);
   }
 
   /**
