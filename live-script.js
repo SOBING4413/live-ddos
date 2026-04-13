@@ -1,7 +1,7 @@
 /**
  * live-script.js - Main entry point for Cyber Attack Map (Live Page)
  * 
- * Initializes the map, data manager, and UI manager.
+ * Initializes the 3D globe, data manager, and UI manager.
  * Coordinates data flow between modules.
  */
 
@@ -17,6 +17,21 @@ document.addEventListener('DOMContentLoaded', async function () {
   mapManager.init();
   uiManager.init();
 
+  // Globe control events
+  window.addEventListener('globe-zoom', (e) => {
+    if (e.detail.direction === 'in') {
+      mapManager.targetZoom = Math.max(mapManager.minZoom, mapManager.targetZoom - 30);
+    } else {
+      mapManager.targetZoom = Math.min(mapManager.maxZoom, mapManager.targetZoom + 30);
+    }
+  });
+
+  window.addEventListener('globe-reset', () => {
+    mapManager.targetRotation = { x: 0.3, y: -0.5 };
+    mapManager.targetZoom = 280;
+    mapManager.autoRotate = true;
+  });
+
   dataManager.onNewEvent((event) => {
     mapManager.addAttackEvent(event);
     uiManager.addEventToFeed(event);
@@ -26,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     uiManager.updateStats(dataManager);
   }, 800);
 
-  uiManager.showNotification('Connecting to verified threat intelligence feeds...', 'info');
+  uiManager.showNotification('Initializing 3D Globe — Connecting to threat intelligence feeds...', 'info');
 
   await dataManager.init();
 
@@ -49,5 +64,5 @@ document.addEventListener('DOMContentLoaded', async function () {
     mapManager.destroy();
   });
 
-  console.log('Cyber Attack Map initialized. Data source:', dataManager.dataSource);
+  console.log('Cyber Attack Map 3D Globe initialized. Data source:', dataManager.dataSource);
 });
