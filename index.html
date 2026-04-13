@@ -11,28 +11,43 @@
 </head>
 
 <body>
-  <!-- Scanline overlay -->
-  <div class="scanline-overlay"></div>
+  <!-- Ambient background effects -->
+  <div class="ambient-bg">
+    <div class="ambient-orb ambient-orb-1"></div>
+    <div class="ambient-orb ambient-orb-2"></div>
+    <div class="ambient-orb ambient-orb-3"></div>
+  </div>
   <div class="grid-bg"></div>
+  <div class="scanline-overlay"></div>
 
   <!-- Navigation -->
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
       <a href="./index.html" class="nav-brand">
-        <img src="./logo.png" alt="Logo" class="nav-logo">
+        <div class="nav-logo-wrapper">
+          <img src="./logo.png" alt="Logo" class="nav-logo">
+          <div class="nav-logo-glow"></div>
+        </div>
         <div class="nav-brand-text">
-          <span class="nav-title">Cyber <span class="accent">Attack</span> Map</span>
+          <span class="nav-title">CYBER<span class="accent">ATTACK</span>MAP</span>
           <span class="nav-subtitle">Threat Intelligence Platform</span>
         </div>
       </a>
       <div class="nav-links" id="nav-links">
-        <a href="./index.html" class="nav-link active">Home</a>
-        <a href="./live.html" class="nav-link">Live Map</a>
-        <a href="./docs.html" class="nav-link">Documentation</a>
+        <a href="./index.html" class="nav-link active">
+          <span class="nav-link-icon">◆</span> Home
+        </a>
+        <a href="./live.html" class="nav-link">
+          <span class="nav-link-icon">◉</span> Live Map
+        </a>
+        <a href="./docs.html" class="nav-link">
+          <span class="nav-link-icon">◈</span> Documentation
+        </a>
       </div>
       <a href="./live.html" class="nav-cta">
-        <span class="cta-dot"></span>
-        Launch Live Map
+        <span class="cta-pulse"></span>
+        <span class="cta-text">Launch Live Map</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
       <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -41,57 +56,100 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero">
+  <section class="hero" id="hero">
     <div class="hero-bg">
-      <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112401/2026-04-12/0e3c4748-bd8e-4bcb-bfc9-7633a0cae41c.png" alt="Cyber Globe" class="hero-bg-img">
+      <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112475/2026-04-13/667057e3-7301-403c-943a-28394dbfaefc.png" alt="Cyber Globe" class="hero-bg-img">
       <div class="hero-bg-overlay"></div>
+      <div class="hero-particles" id="hero-particles"></div>
     </div>
     <div class="hero-content">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        Real-Time Threat Intelligence Monitoring
+      <div class="hero-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text">
+          <span class="eyebrow-dot"></span>
+          Real-Time Threat Intelligence
+        </span>
+        <div class="eyebrow-line"></div>
       </div>
       <h1 class="hero-title">
-        Visualisasi <span class="accent">Ancaman Siber</span> Global Secara Real-Time
+        <span class="hero-title-line">Visualisasi</span>
+        <span class="hero-title-line hero-title-accent"><span class="accent">Ancaman Siber</span></span>
+        <span class="hero-title-line">Global Secara <span class="accent-cyan">Real-Time</span></span>
       </h1>
       <p class="hero-desc">
-        Platform intelijen ancaman siber mutakhir yang mengagregasi, mengkorelasi, dan memvisualisasikan vektor serangan dari berbagai sumber data terverifikasi secara simultan. Menyediakan panorama komprehensif terhadap lanskap ancaman siber kontemporer melalui antarmuka geospasial interaktif.
+        Platform intelijen ancaman siber mutakhir yang mengagregasi, mengkorelasi, dan memvisualisasikan vektor serangan dari berbagai sumber data terverifikasi secara simultan.
       </p>
       <div class="hero-actions">
-        <a href="./live.html" class="btn btn-primary">
-          <span class="btn-icon">⚡</span>
-          Akses Live Map
+        <a href="./live.html" class="btn btn-primary btn-glow">
+          <span class="btn-shine"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Akses Live Map</span>
         </a>
-        <a href="./docs.html" class="btn btn-outline">
-          <span class="btn-icon">📖</span>
-          Baca Dokumentasi
+        <a href="./docs.html" class="btn btn-ghost">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Dokumentasi</span>
         </a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats-bar">
         <div class="hero-stat">
-          <div class="hero-stat-value" data-count="6">6</div>
-          <div class="hero-stat-label">Kategori Vektor Serangan</div>
+          <div class="hero-stat-number">
+            <span class="stat-counter" data-target="6">0</span>
+          </div>
+          <div class="hero-stat-label">Vektor Serangan</div>
         </div>
-        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-sep"></div>
         <div class="hero-stat">
-          <div class="hero-stat-value" data-count="30">30+</div>
+          <div class="hero-stat-number">
+            <span class="stat-counter" data-target="30">0</span><span class="stat-suffix">+</span>
+          </div>
           <div class="hero-stat-label">Negara Termonitor</div>
         </div>
-        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-sep"></div>
         <div class="hero-stat">
-          <div class="hero-stat-value" data-count="3">3</div>
-          <div class="hero-stat-label">Sumber Data Intelijen</div>
+          <div class="hero-stat-number">
+            <span class="stat-counter" data-target="3">0</span>
+          </div>
+          <div class="hero-stat-label">Sumber Intelijen</div>
         </div>
-        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-sep"></div>
         <div class="hero-stat">
-          <div class="hero-stat-value">24/7</div>
-          <div class="hero-stat-label">Pemantauan Berkelanjutan</div>
+          <div class="hero-stat-number">24/7</div>
+          <div class="hero-stat-label">Monitoring Aktif</div>
         </div>
       </div>
     </div>
-    <div class="hero-scroll-indicator">
-      <span>Scroll untuk eksplorasi</span>
-      <div class="scroll-arrow"></div>
+    <div class="hero-scroll-cue">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span>Scroll to explore</span>
+    </div>
+  </section>
+
+  <!-- Trusted Sources Banner -->
+  <section class="trust-banner">
+    <div class="container">
+      <div class="trust-inner">
+        <span class="trust-label">Powered by Verified Intelligence Feeds</span>
+        <div class="trust-logos">
+          <div class="trust-item">
+            <span class="trust-dot trust-dot-red"></span>
+            <span>Feodo Tracker</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-dot trust-dot-yellow"></span>
+            <span>URLhaus</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-dot trust-dot-purple"></span>
+            <span>ThreatFox</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-dot trust-dot-cyan"></span>
+            <span>abuse.ch</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -99,68 +157,108 @@
   <section class="section features-section" id="features">
     <div class="container">
       <div class="section-header">
-        <div class="section-badge">Kapabilitas Inti</div>
+        <div class="section-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Kapabilitas Inti
+        </div>
         <h2 class="section-title">Arsitektur <span class="accent">Intelijen Ancaman</span> Terintegrasi</h2>
         <p class="section-desc">
           Ekosistem pemantauan keamanan siber yang mengimplementasikan paradigma multi-layer threat detection dengan kapabilitas analisis heuristik dan korelasi data lintas-sumber secara real-time.
         </p>
       </div>
+
+      <!-- Featured Card -->
+      <div class="feature-hero-card animate-on-scroll">
+        <div class="feature-hero-img">
+          <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112475/2026-04-13/8a4d864e-0841-4c6f-9847-6f290baa8d77.png" alt="Real-time Monitoring">
+          <div class="feature-hero-img-overlay"></div>
+        </div>
+        <div class="feature-hero-content">
+          <div class="feature-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Primary Feature
+          </div>
+          <h3>Real-Time Threat Telemetry</h3>
+          <p>Implementasi mekanisme ingesti data streaming dengan latensi sub-detik dari multiple threat intelligence feeds. Sistem mengeksekusi normalisasi dan enrichment data secara otomatis melalui pipeline ETL yang dioptimasi untuk throughput tinggi.</p>
+          <ul class="feature-checks">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Streaming data ingestion dengan WebSocket protocol
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Automated IOC enrichment pipeline
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Sub-second latency threat visualization
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Adaptive polling with exponential backoff
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Feature Grid -->
       <div class="features-grid">
-        <div class="feature-card feature-card-large">
-          <div class="feature-card-img">
-            <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112401/2026-04-12/26d37756-fad6-43de-9be5-274fd62fb126.png" alt="Real-time Monitoring">
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" stroke-width="2"/></svg>
           </div>
-          <div class="feature-card-content">
-            <div class="feature-icon">📡</div>
-            <h3>Real-Time Threat Telemetry</h3>
-            <p>Implementasi mekanisme ingesti data streaming dengan latensi sub-detik dari multiple threat intelligence feeds. Sistem mengeksekusi normalisasi dan enrichment data secara otomatis melalui pipeline ETL yang dioptimasi untuk throughput tinggi, memungkinkan visualisasi instantaneous terhadap emerging threats.</p>
-            <ul class="feature-list">
-              <li>Streaming data ingestion dengan WebSocket protocol</li>
-              <li>Automated IOC (Indicator of Compromise) enrichment</li>
-              <li>Sub-second latency threat visualization</li>
-              <li>Adaptive polling mechanism dengan exponential backoff</li>
-            </ul>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🌐</div>
           <h3>Geospatial Attack Mapping</h3>
-          <p>Rendering kartografis interaktif berbasis Leaflet.js dengan custom canvas overlay untuk visualisasi trajectory serangan. Mengimplementasikan Bézier curve interpolation untuk representasi akurat attack vector dengan animasi real-time.</p>
-          <ul class="feature-list">
-            <li>Interactive Leaflet.js cartographic engine</li>
-            <li>Canvas-based arc rendering pipeline</li>
-            <li>Pulse marker dengan severity-based scaling</li>
-          </ul>
-        </div>
-        <div class="feature-card">
-          <div class="feature-card-img">
-            <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112401/2026-04-12/a318ae23-a8b0-4bd4-afef-3abdfbf3e6a5.png" alt="Threat Intelligence">
-          </div>
-          <div class="feature-card-content">
-            <div class="feature-icon">🧠</div>
-            <h3>Multi-Source Intelligence Aggregation</h3>
-            <p>Orkestrasi pengumpulan data dari ekosistem abuse.ch yang mencakup Feodo Tracker, URLhaus, dan ThreatFox. Setiap data point divalidasi melalui cross-referencing dengan multiple authoritative databases untuk memastikan akurasi dan reliabilitas intelijen.</p>
+          <p>Rendering kartografis interaktif berbasis Leaflet.js dengan custom canvas overlay untuk visualisasi trajectory serangan menggunakan Bézier curve interpolation.</p>
+          <div class="feature-card-footer">
+            <span class="feature-tech-tag">Leaflet.js</span>
+            <span class="feature-tech-tag">Canvas API</span>
+            <span class="feature-tech-tag">WebGL</span>
           </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-card-icon feature-card-icon-purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" stroke-width="2"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Multi-Source Intelligence</h3>
+          <p>Orkestrasi pengumpulan data dari ekosistem abuse.ch: Feodo Tracker, URLhaus, dan ThreatFox. Cross-referencing dengan multiple authoritative databases.</p>
+          <div class="feature-card-footer">
+            <span class="feature-tech-tag">REST API</span>
+            <span class="feature-tech-tag">CORS Proxy</span>
+            <span class="feature-tech-tag">JSON</span>
+          </div>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-card-icon feature-card-icon-cyan">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <h3>Statistical Threat Analytics</h3>
-          <p>Dashboard analitik komprehensif yang menyajikan distribusi serangan berdasarkan taksonomi MITRE ATT&CK, geographic origin analysis, temporal pattern recognition, dan severity classification menggunakan metodologi CVSS-aligned scoring.</p>
-          <ul class="feature-list">
-            <li>Attack type distribution analysis</li>
-            <li>Top source/target country ranking</li>
-            <li>Temporal attack frequency metrics</li>
-          </ul>
+          <p>Dashboard analitik komprehensif: distribusi serangan berdasarkan MITRE ATT&CK, geographic origin analysis, temporal pattern recognition, dan severity classification.</p>
+          <div class="feature-card-footer">
+            <span class="feature-tech-tag">MITRE ATT&CK</span>
+            <span class="feature-tech-tag">CVSS</span>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🛡️</div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-card-icon feature-card-icon-orange">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <h3>Threat Level Assessment</h3>
-          <p>Algoritma penilaian tingkat ancaman global yang mengkalkulasi composite threat score berdasarkan attack velocity, severity distribution, dan geographic spread. Menghasilkan indikator real-time dari LOW hingga CRITICAL.</p>
+          <p>Algoritma penilaian tingkat ancaman global: composite threat score berdasarkan attack velocity, severity distribution, dan geographic spread. Indikator LOW hingga CRITICAL.</p>
+          <div class="feature-card-footer">
+            <span class="feature-tech-tag">Scoring</span>
+            <span class="feature-tech-tag">Real-time</span>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔔</div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-card-icon feature-card-icon-red">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <h3>High-Severity Alert System</h3>
-          <p>Sistem notifikasi real-time untuk insiden dengan severity level HIGH dan CRITICAL. Mengimplementasikan prioritized event queue dengan automatic escalation berdasarkan predefined threshold parameters.</p>
+          <p>Sistem notifikasi real-time untuk insiden HIGH dan CRITICAL. Prioritized event queue dengan automatic escalation berdasarkan predefined threshold parameters.</p>
+          <div class="feature-card-footer">
+            <span class="feature-tech-tag">Alerts</span>
+            <span class="feature-tech-tag">Escalation</span>
+          </div>
         </div>
       </div>
     </div>
@@ -168,73 +266,116 @@
 
   <!-- Attack Taxonomy Section -->
   <section class="section taxonomy-section">
+    <div class="section-bg-accent">
+      <img src="https://mgx-backend-cdn.metadl.com/generate/images/1112475/2026-04-13/a78e4096-b3eb-4393-b342-6568effc048f.png" alt="" class="section-bg-img">
+      <div class="section-bg-overlay"></div>
+    </div>
     <div class="container">
       <div class="section-header">
-        <div class="section-badge">Taksonomi Serangan</div>
+        <div class="section-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Taksonomi Serangan
+        </div>
         <h2 class="section-title">Klasifikasi <span class="accent">Vektor Serangan</span> Siber</h2>
         <p class="section-desc">
-          Kategorisasi komprehensif berdasarkan framework MITRE ATT&CK dan ENISA Threat Landscape, mencakup enam vektor serangan primer yang dimonitor secara kontinu.
+          Kategorisasi komprehensif berdasarkan framework MITRE ATT&CK dan ENISA Threat Landscape, mencakup enam vektor serangan primer.
         </p>
       </div>
       <div class="taxonomy-grid">
-        <div class="taxonomy-card" style="--card-color: #ff3366;">
-          <div class="taxonomy-icon">⚡</div>
-          <h3>DDoS (Distributed Denial of Service)</h3>
-          <p>Serangan volumetrik yang mengeksploitasi bandwidth saturation melalui teknik amplifikasi (DNS, NTP, SSDP) dan application-layer flooding (HTTP/2 Rapid Reset, Slowloris). Termasuk SYN flood, UDP amplification, dan multi-vector hybrid attacks.</p>
-          <div class="taxonomy-meta">
-            <span class="taxonomy-tag">Volumetric</span>
-            <span class="taxonomy-tag">Protocol</span>
-            <span class="taxonomy-tag">Application Layer</span>
+        <div class="taxonomy-card animate-on-scroll" data-color="#ff3366">
+          <div class="taxonomy-card-glow" style="--glow-color: #ff3366;"></div>
+          <div class="taxonomy-header">
+            <div class="taxonomy-icon-wrap" style="--icon-color: #ff3366;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="taxonomy-severity" style="--sev-color: #ff3366;">HIGH</div>
+          </div>
+          <h3>DDoS</h3>
+          <p>Serangan volumetrik: DNS/NTP/SSDP amplification, HTTP/2 Rapid Reset, SYN flood, UDP amplification, dan multi-vector hybrid attacks.</p>
+          <div class="taxonomy-tags">
+            <span>Volumetric</span>
+            <span>Protocol</span>
+            <span>App Layer</span>
           </div>
         </div>
-        <div class="taxonomy-card" style="--card-color: #ff8c00;">
-          <div class="taxonomy-icon">🐛</div>
+        <div class="taxonomy-card animate-on-scroll" data-color="#ff8c00">
+          <div class="taxonomy-card-glow" style="--glow-color: #ff8c00;"></div>
+          <div class="taxonomy-header">
+            <div class="taxonomy-icon-wrap" style="--icon-color: #ff8c00;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="2"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="taxonomy-severity" style="--sev-color: #ff8c00;">CRITICAL</div>
+          </div>
           <h3>Malware Distribution</h3>
-          <p>Proliferasi perangkat lunak berbahaya mencakup ransomware (LockBit, BlackCat), banking trojans (Emotet, Dridex, QakBot), infostealers (RedLine, Raccoon), dan botnet command-and-control infrastructure. Termasuk cryptominers dan fileless malware.</p>
-          <div class="taxonomy-meta">
-            <span class="taxonomy-tag">Ransomware</span>
-            <span class="taxonomy-tag">Trojan</span>
-            <span class="taxonomy-tag">Botnet C2</span>
+          <p>Ransomware (LockBit, BlackCat), banking trojans (Emotet, Dridex), infostealers (RedLine, Raccoon), botnet C2, cryptominers.</p>
+          <div class="taxonomy-tags">
+            <span>Ransomware</span>
+            <span>Trojan</span>
+            <span>Botnet C2</span>
           </div>
         </div>
-        <div class="taxonomy-card" style="--card-color: #ffd700;">
-          <div class="taxonomy-icon">🎣</div>
+        <div class="taxonomy-card animate-on-scroll" data-color="#ffd700">
+          <div class="taxonomy-card-glow" style="--glow-color: #ffd700;"></div>
+          <div class="taxonomy-header">
+            <div class="taxonomy-icon-wrap" style="--icon-color: #ffd700;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2"/><path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="taxonomy-severity" style="--sev-color: #ffd700;">HIGH</div>
+          </div>
           <h3>Phishing & Social Engineering</h3>
-          <p>Teknik manipulasi psikologis yang mengeksploitasi human vulnerability melalui credential harvesting, business email compromise (BEC), spear phishing, OAuth consent phishing, dan QR code phishing (quishing). Termasuk brand impersonation campaigns.</p>
-          <div class="taxonomy-meta">
-            <span class="taxonomy-tag">Credential Harvest</span>
-            <span class="taxonomy-tag">BEC</span>
-            <span class="taxonomy-tag">Spear Phishing</span>
+          <p>Credential harvesting, BEC, spear phishing, OAuth consent phishing, QR code phishing (quishing), brand impersonation.</p>
+          <div class="taxonomy-tags">
+            <span>Credential</span>
+            <span>BEC</span>
+            <span>Spear Phishing</span>
           </div>
         </div>
-        <div class="taxonomy-card" style="--card-color: #00bfff;">
-          <div class="taxonomy-icon">🔓</div>
+        <div class="taxonomy-card animate-on-scroll" data-color="#00bfff">
+          <div class="taxonomy-card-glow" style="--glow-color: #00bfff;"></div>
+          <div class="taxonomy-header">
+            <div class="taxonomy-icon-wrap" style="--icon-color: #00bfff;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="taxonomy-severity" style="--sev-color: #00bfff;">MEDIUM</div>
+          </div>
           <h3>Network Intrusion</h3>
-          <p>Upaya akses tidak terotorisasi melalui brute force authentication attacks, credential stuffing, lateral movement, privilege escalation, dan advanced persistent threat (APT) campaigns. Mencakup SSH, RDP, VNC, dan Telnet exploitation vectors.</p>
-          <div class="taxonomy-meta">
-            <span class="taxonomy-tag">Brute Force</span>
-            <span class="taxonomy-tag">Lateral Movement</span>
-            <span class="taxonomy-tag">APT</span>
+          <p>Brute force, credential stuffing, lateral movement, privilege escalation, APT campaigns. SSH, RDP, VNC exploitation.</p>
+          <div class="taxonomy-tags">
+            <span>Brute Force</span>
+            <span>Lateral</span>
+            <span>APT</span>
           </div>
         </div>
-        <div class="taxonomy-card" style="--card-color: #a855f7;">
-          <div class="taxonomy-icon">💉</div>
+        <div class="taxonomy-card animate-on-scroll" data-color="#a855f7">
+          <div class="taxonomy-card-glow" style="--glow-color: #a855f7;"></div>
+          <div class="taxonomy-header">
+            <div class="taxonomy-icon-wrap" style="--icon-color: #a855f7;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="taxonomy-severity" style="--sev-color: #a855f7;">CRITICAL</div>
+          </div>
           <h3>Vulnerability Exploitation</h3>
-          <p>Eksploitasi kerentanan perangkat lunak yang terdokumentasi (CVE) termasuk zero-day exploits, supply chain attacks, dan weaponized proof-of-concept. Mencakup CVE-2024-3400 (PAN-OS), CVE-2024-21887 (Ivanti), dan Log4Shell residual exploitation.</p>
-          <div class="taxonomy-meta">
-            <span class="taxonomy-tag">Zero-Day</span>
-            <span class="taxonomy-tag">CVE Exploit</span>
-            <span class="taxonomy-tag">Supply Chain</span>
+          <p>Zero-day exploits, supply chain attacks, weaponized PoC. CVE-2024-3400, CVE-2024-21887, Log4Shell residual.</p>
+          <div class="taxonomy-tags">
+            <span>Zero-Day</span>
+            <span>CVE</span>
+            <span>Supply Chain</span>
           </div>
         </div>
-        <div class="taxonomy-card" style="--card-color: #00ff88;">
-          <div class="taxonomy-icon">📡</div>
+        <div class="taxonomy-card animate-on-scroll" data-color="#00ff88">
+          <div class="taxonomy-card-glow" style="--glow-color: #00ff88;"></div>
+          <div class="taxonomy-header">
+            <div class="taxonomy-icon-wrap" style="--icon-color: #00ff88;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="taxonomy-severity" style="--sev-color: #00ff88;">LOW</div>
+          </div>
           <h3>Reconnaissance & Scanning</h3>
-          <p>Aktivitas pengintaian jaringan meliputi port scanning, service enumeration, vulnerability assessment, banner grabbing, dan network topology mapping. Merupakan fase initial dari kill chain yang mendahului serangan aktif.</p>
-          <div class="taxonomy-meta">
-            <span class="taxonomy-tag">Port Scan</span>
-            <span class="taxonomy-tag">Enumeration</span>
-            <span class="taxonomy-tag">Recon</span>
+          <p>Port scanning, service enumeration, vulnerability assessment, banner grabbing, network topology mapping. Initial kill chain phase.</p>
+          <div class="taxonomy-tags">
+            <span>Port Scan</span>
+            <span>Enum</span>
+            <span>Recon</span>
           </div>
         </div>
       </div>
@@ -245,87 +386,117 @@
   <section class="section sources-section">
     <div class="container">
       <div class="section-header">
-        <div class="section-badge">Sumber Data</div>
+        <div class="section-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3" stroke="currentColor" stroke-width="2"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3" stroke="currentColor" stroke-width="2"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" stroke="currentColor" stroke-width="2"/></svg>
+          Sumber Data
+        </div>
         <h2 class="section-title">Ekosistem <span class="accent">Threat Intelligence</span> Feeds</h2>
         <p class="section-desc">
           Agregasi data dari penyedia intelijen ancaman terkemuka yang diakui secara global oleh komunitas keamanan siber internasional.
         </p>
       </div>
       <div class="sources-grid">
-        <div class="source-card">
-          <div class="source-header">
-            <div class="source-icon">🔴</div>
+        <div class="source-card animate-on-scroll">
+          <div class="source-status source-status-live">
+            <span class="source-status-dot"></span>
+            LIVE FEED
+          </div>
+          <div class="source-card-header">
+            <div class="source-icon-wrap source-icon-red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
             <div>
               <h3>Feodo Tracker</h3>
-              <span class="source-provider">by abuse.ch</span>
+              <span class="source-by">by abuse.ch</span>
             </div>
           </div>
-          <p>Database komprehensif infrastruktur botnet Command & Control (C2) yang mengidentifikasi server C2 dari malware families seperti Emotet, Dridex, TrickBot, QakBot, dan IcedID. Menyediakan IP blocklist yang diperbarui secara periodik.</p>
-          <div class="source-meta">
-            <div class="source-meta-item">
-              <span class="meta-label">Tipe Data</span>
-              <span class="meta-value">Botnet C2 IPs</span>
+          <p>Database komprehensif infrastruktur botnet C2 — Emotet, Dridex, TrickBot, QakBot, IcedID. IP blocklist diperbarui periodik.</p>
+          <div class="source-specs">
+            <div class="source-spec">
+              <span class="spec-label">Data</span>
+              <span class="spec-value">Botnet C2 IPs</span>
             </div>
-            <div class="source-meta-item">
-              <span class="meta-label">Format</span>
-              <span class="meta-value">JSON / CSV</span>
+            <div class="source-spec">
+              <span class="spec-label">Format</span>
+              <span class="spec-value">JSON / CSV</span>
             </div>
-            <div class="source-meta-item">
-              <span class="meta-label">Update</span>
-              <span class="meta-value">Every 5 min</span>
+            <div class="source-spec">
+              <span class="spec-label">Refresh</span>
+              <span class="spec-value">5 min</span>
             </div>
           </div>
-          <a href="https://feodotracker.abuse.ch/" target="_blank" rel="noopener" class="source-link">Kunjungi Feodo Tracker →</a>
+          <a href="https://feodotracker.abuse.ch/" target="_blank" rel="noopener" class="source-link">
+            Visit Feodo Tracker
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
-        <div class="source-card">
-          <div class="source-header">
-            <div class="source-icon">🟡</div>
+        <div class="source-card animate-on-scroll">
+          <div class="source-status source-status-live">
+            <span class="source-status-dot"></span>
+            LIVE FEED
+          </div>
+          <div class="source-card-header">
+            <div class="source-icon-wrap source-icon-yellow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
             <div>
               <h3>URLhaus</h3>
-              <span class="source-provider">by abuse.ch</span>
+              <span class="source-by">by abuse.ch</span>
             </div>
           </div>
-          <p>Repository URL yang digunakan untuk distribusi malware, dikurasi oleh komunitas keamanan global. Mengidentifikasi dan melacak malware distribution sites, payload hosting, dan phishing infrastructure secara real-time.</p>
-          <div class="source-meta">
-            <div class="source-meta-item">
-              <span class="meta-label">Tipe Data</span>
-              <span class="meta-value">Malware URLs</span>
+          <p>Repository URL distribusi malware, dikurasi komunitas keamanan global. Melacak malware distribution sites dan phishing infrastructure.</p>
+          <div class="source-specs">
+            <div class="source-spec">
+              <span class="spec-label">Data</span>
+              <span class="spec-value">Malware URLs</span>
             </div>
-            <div class="source-meta-item">
-              <span class="meta-label">Format</span>
-              <span class="meta-value">JSON API</span>
+            <div class="source-spec">
+              <span class="spec-label">Format</span>
+              <span class="spec-value">JSON API</span>
             </div>
-            <div class="source-meta-item">
-              <span class="meta-label">Update</span>
-              <span class="meta-value">Real-time</span>
+            <div class="source-spec">
+              <span class="spec-label">Refresh</span>
+              <span class="spec-value">Real-time</span>
             </div>
           </div>
-          <a href="https://urlhaus.abuse.ch/" target="_blank" rel="noopener" class="source-link">Kunjungi URLhaus →</a>
+          <a href="https://urlhaus.abuse.ch/" target="_blank" rel="noopener" class="source-link">
+            Visit URLhaus
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
-        <div class="source-card">
-          <div class="source-header">
-            <div class="source-icon">🟣</div>
+        <div class="source-card animate-on-scroll">
+          <div class="source-status source-status-live">
+            <span class="source-status-dot"></span>
+            LIVE FEED
+          </div>
+          <div class="source-card-header">
+            <div class="source-icon-wrap source-icon-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
             <div>
               <h3>ThreatFox</h3>
-              <span class="source-provider">by abuse.ch</span>
+              <span class="source-by">by abuse.ch</span>
             </div>
           </div>
-          <p>Platform berbagi Indicators of Compromise (IOC) yang memfasilitasi kolaborasi komunitas keamanan siber. Mengagregasi IOC dari berbagai malware families termasuk IP addresses, domain names, URLs, dan file hashes.</p>
-          <div class="source-meta">
-            <div class="source-meta-item">
-              <span class="meta-label">Tipe Data</span>
-              <span class="meta-value">IOC Database</span>
+          <p>Platform berbagi IOC — IP addresses, domain names, URLs, file hashes. Kolaborasi komunitas keamanan siber global.</p>
+          <div class="source-specs">
+            <div class="source-spec">
+              <span class="spec-label">Data</span>
+              <span class="spec-value">IOC Database</span>
             </div>
-            <div class="source-meta-item">
-              <span class="meta-label">Format</span>
-              <span class="meta-value">JSON API</span>
+            <div class="source-spec">
+              <span class="spec-label">Format</span>
+              <span class="spec-value">JSON API</span>
             </div>
-            <div class="source-meta-item">
-              <span class="meta-label">Update</span>
-              <span class="meta-value">Community-driven</span>
+            <div class="source-spec">
+              <span class="spec-label">Refresh</span>
+              <span class="spec-value">Community</span>
             </div>
           </div>
-          <a href="https://threatfox.abuse.ch/" target="_blank" rel="noopener" class="source-link">Kunjungi ThreatFox →</a>
+          <a href="https://threatfox.abuse.ch/" target="_blank" rel="noopener" class="source-link">
+            Visit ThreatFox
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
       </div>
     </div>
@@ -335,46 +506,61 @@
   <section class="section methodology-section">
     <div class="container">
       <div class="section-header">
-        <div class="section-badge">Metodologi</div>
+        <div class="section-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke="currentColor" stroke-width="2"/></svg>
+          Metodologi
+        </div>
         <h2 class="section-title">Arsitektur <span class="accent">Pemrosesan Data</span></h2>
         <p class="section-desc">
-          Pipeline pemrosesan data multi-stage yang mengimplementasikan prinsip defense-in-depth untuk memastikan integritas dan akurasi setiap data point yang divisualisasikan.
+          Pipeline pemrosesan data multi-stage yang memastikan integritas dan akurasi setiap data point yang divisualisasikan.
         </p>
       </div>
-      <div class="methodology-timeline">
-        <div class="method-step">
-          <div class="method-number">01</div>
-          <div class="method-content">
-            <h3>Data Acquisition & Ingestion</h3>
-            <p>Inisiasi koneksi ke multiple threat intelligence APIs melalui CORS-compliant proxy infrastructure. Implementasi cascading fallback mechanism: Feodo Tracker → URLhaus → ThreatFox → Simulation Mode. Setiap endpoint diuji dengan timeout 8-10 detik sebelum failover ke sumber alternatif.</p>
+      <div class="pipeline-flow">
+        <div class="pipeline-step animate-on-scroll">
+          <div class="pipeline-step-num">01</div>
+          <div class="pipeline-step-content">
+            <h3>Data Acquisition</h3>
+            <p>Koneksi ke multiple threat intelligence APIs. Cascading fallback: Feodo Tracker → URLhaus → ThreatFox → Simulation Mode. Timeout 8-10 detik per endpoint.</p>
+          </div>
+          <div class="pipeline-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
-        <div class="method-step">
-          <div class="method-number">02</div>
-          <div class="method-content">
+        <div class="pipeline-step animate-on-scroll">
+          <div class="pipeline-step-num">02</div>
+          <div class="pipeline-step-content">
             <h3>Normalization & Enrichment</h3>
-            <p>Raw data dari heterogeneous sources dinormalisasi ke unified event schema. Proses enrichment mencakup geolocation resolution, country-to-city mapping, attack type classification, dan severity scoring. IP addresses divalidasi dan di-enrich dengan ASN information.</p>
+            <p>Unified event schema. Geolocation resolution, country-to-city mapping, attack type classification, severity scoring, ASN enrichment.</p>
+          </div>
+          <div class="pipeline-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
-        <div class="method-step">
-          <div class="method-number">03</div>
-          <div class="method-content">
+        <div class="pipeline-step animate-on-scroll">
+          <div class="pipeline-step-num">03</div>
+          <div class="pipeline-step-content">
             <h3>Statistical Aggregation</h3>
-            <p>Kalkulasi real-time metrics termasuk attacks-per-minute, events-per-second, country distribution, attack type breakdown, dan route frequency analysis. Implementasi sliding window algorithm untuk temporal analysis dengan granularitas 10-detik dan 60-detik.</p>
+            <p>Real-time metrics: attacks-per-minute, events-per-second, country distribution, attack type breakdown. Sliding window algorithm (10s & 60s).</p>
+          </div>
+          <div class="pipeline-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
-        <div class="method-step">
-          <div class="method-number">04</div>
-          <div class="method-content">
+        <div class="pipeline-step animate-on-scroll">
+          <div class="pipeline-step-num">04</div>
+          <div class="pipeline-step-content">
             <h3>Geospatial Visualization</h3>
-            <p>Rendering attack trajectories menggunakan quadratic Bézier curve pada HTML5 Canvas overlay. Setiap arc dianimasikan dengan easeOutExpo timing function untuk travel phase dan easeInOutCubic untuk fade phase. Pulse markers dengan severity-proportional scaling ditampilkan pada source dan target coordinates.</p>
+            <p>Quadratic Bézier curve pada Canvas overlay. EaseOutExpo timing untuk travel, easeInOutCubic untuk fade. Severity-proportional pulse markers.</p>
+          </div>
+          <div class="pipeline-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
-        <div class="method-step">
-          <div class="method-number">05</div>
-          <div class="method-content">
-            <h3>Simulation Fallback Protocol</h3>
-            <p>Ketika live API feeds tidak tersedia (CORS restrictions), sistem mengaktifkan simulation mode yang menggunakan distribusi statistik dari laporan resmi: Check Point 2024, Kaspersky Security Bulletin 2024, ENISA Threat Landscape 2024, dan Fortinet Global Threat Report 2024. Semua data simulasi dilabeli secara eksplisit dengan prefix [SIM].</p>
+        <div class="pipeline-step animate-on-scroll">
+          <div class="pipeline-step-num">05</div>
+          <div class="pipeline-step-content">
+            <h3>Simulation Fallback</h3>
+            <p>Distribusi statistik dari Check Point 2024, Kaspersky, ENISA, Fortinet. Data simulasi dilabeli [SIM]. RFC 5737 documentation IPs.</p>
           </div>
         </div>
       </div>
@@ -385,17 +571,24 @@
   <section class="section cta-section">
     <div class="container">
       <div class="cta-card">
-        <h2>Mulai Pantau Ancaman Siber Global</h2>
-        <p>Akses dashboard real-time threat intelligence dan visualisasikan lanskap ancaman siber global secara langsung melalui antarmuka geospasial interaktif kami.</p>
-        <div class="cta-actions">
-          <a href="./live.html" class="btn btn-primary btn-lg">
-            <span class="btn-icon">🌐</span>
-            Launch Live Attack Map
-          </a>
-          <a href="./docs.html" class="btn btn-outline btn-lg">
-            <span class="btn-icon">📚</span>
-            Dokumentasi Teknis
-          </a>
+        <div class="cta-bg-effect"></div>
+        <div class="cta-content">
+          <div class="cta-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="var(--accent)" stroke-width="1.5"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="var(--accent)" stroke-width="1.5"/></svg>
+          </div>
+          <h2>Mulai Pantau Ancaman Siber Global</h2>
+          <p>Akses dashboard real-time threat intelligence dan visualisasikan lanskap ancaman siber global secara langsung.</p>
+          <div class="cta-buttons">
+            <a href="./live.html" class="btn btn-primary btn-lg btn-glow">
+              <span class="btn-shine"></span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" stroke-width="2"/></svg>
+              Launch Live Attack Map
+            </a>
+            <a href="./docs.html" class="btn btn-ghost btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Dokumentasi Teknis
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -411,6 +604,11 @@
             <span class="footer-title">Cyber Attack Map</span>
           </div>
           <p>Platform intelijen ancaman siber real-time yang mengagregasi data dari sumber terverifikasi untuk memvisualisasikan lanskap ancaman global.</p>
+          <div class="footer-social">
+            <a href="#" class="social-link" aria-label="GitHub">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
         </div>
         <div class="footer-links-group">
           <h4>Navigasi</h4>
@@ -432,8 +630,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© 2026 Cyber Attack Map. Platform intelijen ancaman siber untuk keperluan edukasi dan monitoring.</p>
-        <p class="footer-disclaimer">Data yang ditampilkan bersumber dari threat intelligence feeds publik. Mode simulasi menggunakan distribusi statistik dari laporan keamanan siber terpublikasi.</p>
+        <p>© 2026 Cyber Attack Map — Platform intelijen ancaman siber untuk keperluan edukasi dan monitoring.</p>
+        <p class="footer-disclaimer">Data bersumber dari threat intelligence feeds publik. Mode simulasi menggunakan distribusi statistik dari laporan keamanan siber terpublikasi.</p>
       </div>
     </div>
   </footer>
