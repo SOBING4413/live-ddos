@@ -1,11 +1,8 @@
 /**
  * map.js - Three.js 3D Realistic Earth Globe for Cyber Attack Map
  * 
- * Improved version with:
- * - More accurate continent/island polygon shapes
- * - Better positioned country labels
- * - Refined biome colors and terrain detail
- * - Polished atmosphere, ocean, and lighting
+ * Uses NASA Earth texture for accurate continent rendering,
+ * with country labels, attack arc animations, and polished visuals.
  */
 
 import { ATTACK_TYPES } from './data.js';
@@ -29,61 +26,55 @@ function createArcCurve(start, end, radius, arcHeight) {
 }
 
 /**
- * Country label data - curated list of ~40 major countries
- * Positioned at visual center of each country, sized by area/importance
+ * Country labels - curated ~40 major countries, well-positioned
  */
 const COUNTRY_LABELS = [
-  // Americas
   { name: 'United States', lat: 39.0, lng: -98.0, size: 1.0 },
   { name: 'Canada', lat: 58.0, lng: -100.0, size: 0.9 },
   { name: 'Mexico', lat: 24.0, lng: -102.0, size: 0.7 },
   { name: 'Brazil', lat: -10.0, lng: -52.0, size: 1.0 },
   { name: 'Argentina', lat: -35.0, lng: -64.0, size: 0.7 },
-  { name: 'Colombia', lat: 4.0, lng: -72.0, size: 0.55 },
-  { name: 'Peru', lat: -10.0, lng: -76.0, size: 0.55 },
+  { name: 'Colombia', lat: 4.0, lng: -72.0, size: 0.5 },
+  { name: 'Peru', lat: -10.0, lng: -76.0, size: 0.5 },
   { name: 'Chile', lat: -33.0, lng: -71.0, size: 0.45 },
-  { name: 'Greenland', lat: 72.0, lng: -40.0, size: 0.6 },
-  // Europe
+  { name: 'Greenland', lat: 72.0, lng: -40.0, size: 0.55 },
   { name: 'Russia', lat: 62.0, lng: 95.0, size: 1.0 },
-  { name: 'Germany', lat: 51.0, lng: 10.0, size: 0.55 },
-  { name: 'France', lat: 46.5, lng: 2.5, size: 0.55 },
-  { name: 'UK', lat: 54.0, lng: -2.0, size: 0.5 },
-  { name: 'Spain', lat: 40.0, lng: -3.5, size: 0.5 },
-  { name: 'Italy', lat: 42.5, lng: 12.5, size: 0.45 },
-  { name: 'Poland', lat: 52.0, lng: 19.5, size: 0.45 },
-  { name: 'Ukraine', lat: 49.0, lng: 32.0, size: 0.5 },
-  { name: 'Sweden', lat: 62.0, lng: 16.0, size: 0.45 },
-  { name: 'Norway', lat: 64.0, lng: 10.0, size: 0.4 },
-  { name: 'Iceland', lat: 65.0, lng: -19.0, size: 0.35 },
-  // Africa
-  { name: 'Egypt', lat: 27.0, lng: 30.0, size: 0.6 },
-  { name: 'Nigeria', lat: 9.5, lng: 8.0, size: 0.55 },
-  { name: 'South Africa', lat: -29.0, lng: 25.0, size: 0.6 },
-  { name: 'Algeria', lat: 28.0, lng: 2.0, size: 0.6 },
-  { name: 'DR Congo', lat: -3.0, lng: 23.0, size: 0.55 },
-  { name: 'Kenya', lat: 0.5, lng: 38.0, size: 0.45 },
-  // Asia
+  { name: 'Germany', lat: 51.0, lng: 10.0, size: 0.5 },
+  { name: 'France', lat: 46.5, lng: 2.5, size: 0.5 },
+  { name: 'UK', lat: 54.0, lng: -2.0, size: 0.45 },
+  { name: 'Spain', lat: 40.0, lng: -3.5, size: 0.45 },
+  { name: 'Italy', lat: 42.5, lng: 12.5, size: 0.4 },
+  { name: 'Poland', lat: 52.0, lng: 19.5, size: 0.4 },
+  { name: 'Ukraine', lat: 49.0, lng: 32.0, size: 0.45 },
+  { name: 'Sweden', lat: 62.0, lng: 16.0, size: 0.4 },
+  { name: 'Norway', lat: 64.0, lng: 10.0, size: 0.35 },
+  { name: 'Iceland', lat: 65.0, lng: -19.0, size: 0.3 },
+  { name: 'Egypt', lat: 27.0, lng: 30.0, size: 0.55 },
+  { name: 'Nigeria', lat: 9.5, lng: 8.0, size: 0.5 },
+  { name: 'South Africa', lat: -29.0, lng: 25.0, size: 0.55 },
+  { name: 'Algeria', lat: 28.0, lng: 2.0, size: 0.55 },
+  { name: 'DR Congo', lat: -3.0, lng: 23.0, size: 0.5 },
+  { name: 'Kenya', lat: 0.5, lng: 38.0, size: 0.4 },
   { name: 'China', lat: 35.0, lng: 103.0, size: 1.0 },
   { name: 'India', lat: 22.0, lng: 79.0, size: 0.9 },
-  { name: 'Japan', lat: 36.5, lng: 138.5, size: 0.6 },
-  { name: 'South Korea', lat: 36.0, lng: 128.0, size: 0.4 },
-  { name: 'Indonesia', lat: -2.0, lng: 118.0, size: 0.7 },
-  { name: 'Turkey', lat: 39.5, lng: 35.0, size: 0.55 },
-  { name: 'Saudi Arabia', lat: 24.0, lng: 44.0, size: 0.65 },
-  { name: 'Iran', lat: 33.0, lng: 53.0, size: 0.6 },
-  { name: 'Pakistan', lat: 30.0, lng: 69.0, size: 0.55 },
-  { name: 'Thailand', lat: 15.0, lng: 101.0, size: 0.45 },
-  { name: 'Vietnam', lat: 16.0, lng: 108.0, size: 0.4 },
-  { name: 'Philippines', lat: 12.0, lng: 122.0, size: 0.4 },
-  { name: 'Kazakhstan', lat: 48.0, lng: 67.0, size: 0.65 },
-  { name: 'Mongolia', lat: 47.0, lng: 104.0, size: 0.55 },
-  // Oceania
+  { name: 'Japan', lat: 36.5, lng: 138.5, size: 0.55 },
+  { name: 'South Korea', lat: 36.0, lng: 128.0, size: 0.35 },
+  { name: 'Indonesia', lat: -2.0, lng: 118.0, size: 0.65 },
+  { name: 'Turkey', lat: 39.5, lng: 35.0, size: 0.5 },
+  { name: 'Saudi Arabia', lat: 24.0, lng: 44.0, size: 0.6 },
+  { name: 'Iran', lat: 33.0, lng: 53.0, size: 0.55 },
+  { name: 'Pakistan', lat: 30.0, lng: 69.0, size: 0.5 },
+  { name: 'Thailand', lat: 15.0, lng: 101.0, size: 0.4 },
+  { name: 'Vietnam', lat: 16.0, lng: 108.0, size: 0.35 },
+  { name: 'Philippines', lat: 12.0, lng: 122.0, size: 0.35 },
+  { name: 'Kazakhstan', lat: 48.0, lng: 67.0, size: 0.6 },
+  { name: 'Mongolia', lat: 47.0, lng: 104.0, size: 0.5 },
   { name: 'Australia', lat: -25.0, lng: 134.0, size: 0.9 },
-  { name: 'New Zealand', lat: -42.0, lng: 173.0, size: 0.4 },
+  { name: 'New Zealand', lat: -42.0, lng: 173.0, size: 0.35 },
 ];
 
 /**
- * Create a text sprite for country labels - improved styling
+ * Create a text sprite for country labels
  */
 function createTextSprite(text, fontSize, color) {
   const canvas = document.createElement('canvas');
@@ -94,14 +85,14 @@ function createTextSprite(text, fontSize, color) {
 
   ctx.font = `600 ${fSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
   const metrics = ctx.measureText(text);
-  const textWidth = metrics.width + 10 * scale;
+  const textWidth = metrics.width + 12 * scale;
   const textHeight = fSize * 1.5;
 
   canvas.width = textWidth;
   canvas.height = textHeight;
 
-  // Subtle background pill
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+  // Background pill
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
   const r = 4 * scale;
   ctx.beginPath();
   ctx.moveTo(r, 0);
@@ -116,16 +107,16 @@ function createTextSprite(text, fontSize, color) {
   ctx.closePath();
   ctx.fill();
 
-  // Border
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  // Subtle border
+  ctx.strokeStyle = 'rgba(0, 255, 136, 0.15)';
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Text with shadow
+  // Text
   ctx.font = `600 ${fSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
   ctx.shadowBlur = 4;
-  ctx.fillStyle = color || 'rgba(255, 255, 255, 0.88)';
+  ctx.fillStyle = color || 'rgba(255, 255, 255, 0.9)';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, textWidth / 2, textHeight / 2);
@@ -143,708 +134,258 @@ function createTextSprite(text, fontSize, color) {
 
   const sprite = new THREE.Sprite(material);
   const aspect = textWidth / textHeight;
-  const spriteScale = fontSize * 0.14;
+  const spriteScale = fontSize * 0.13;
   sprite.scale.set(spriteScale * aspect, spriteScale, 1);
 
   return sprite;
 }
 
-// ============================================================
-// PROCEDURAL EARTH TEXTURE - Improved continent shapes
-// ============================================================
+/**
+ * Load texture with fallback - tries NASA texture URL, falls back to procedural
+ */
+function loadEarthTexture() {
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader();
+    // Use a reliable NASA Blue Marble texture
+    const urls = [
+      'https://unpkg.com/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
+      'https://unpkg.com/three-globe@2.24.1/example/img/earth-blue-marble.jpg',
+      'https://raw.githubusercontent.com/turban/webgl-earth/master/images/2_no_clouds_4k.jpg',
+    ];
 
-function generateEarthTexture(width, height) {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
+    let attempted = 0;
 
-  // Deep ocean gradient
-  const oceanGrad = ctx.createLinearGradient(0, 0, 0, height);
-  oceanGrad.addColorStop(0, '#0b1a3a');    // polar dark
-  oceanGrad.addColorStop(0.15, '#0a2555'); // mid-high lat
-  oceanGrad.addColorStop(0.35, '#0c2d65'); // mid lat
-  oceanGrad.addColorStop(0.5, '#0e3570');  // equator
-  oceanGrad.addColorStop(0.65, '#0c2d65');
-  oceanGrad.addColorStop(0.85, '#0a2555');
-  oceanGrad.addColorStop(1, '#0b1a3a');
-  ctx.fillStyle = oceanGrad;
-  ctx.fillRect(0, 0, width, height);
-
-  function lngToX(lng) { return ((lng + 180) / 360) * width; }
-  function latToY(lat) { return ((90 - lat) / 180) * height; }
-
-  function drawLand(lats, lngs, baseColor, highlightColor) {
-    if (lats.length < 3) return;
-    ctx.beginPath();
-    ctx.moveTo(lngToX(lngs[0]), latToY(lats[0]));
-    for (let i = 1; i < lats.length; i++) {
-      ctx.lineTo(lngToX(lngs[i]), latToY(lats[i]));
-    }
-    ctx.closePath();
-    if (highlightColor) {
-      const gradient = ctx.createLinearGradient(
-        lngToX(Math.min(...lngs)), latToY(Math.max(...lats)),
-        lngToX(Math.max(...lngs)), latToY(Math.min(...lats))
-      );
-      gradient.addColorStop(0, baseColor);
-      gradient.addColorStop(0.5, highlightColor);
-      gradient.addColorStop(1, baseColor);
-      ctx.fillStyle = gradient;
-    } else {
-      ctx.fillStyle = baseColor;
-    }
-    ctx.fill();
-  }
-
-  // Biome color palette - more realistic
-  const C = {
-    forest:       '#1b5e2e', forestH:      '#2e7d42',
-    tropical:     '#1a6b35', tropicalH:    '#258c48',
-    darkJungle:   '#0e4a1c', darkJungleH:  '#1a5c2a',
-    desert:       '#c9a84c', desertH:      '#d9be6a',
-    tundra:       '#5f7f5f', tundraH:      '#7a9a7a',
-    ice:          '#d0e4f0', iceH:         '#e4f0fa',
-    savanna:      '#8a9a3a', savannaH:     '#a0b050',
-    steppe:       '#95a56a', steppeH:      '#aab87a',
-    mountain:     '#6a6a5a', mountainH:    '#8a8a7a',
-    arid:         '#b09060', aridH:        '#c0a070',
-    taiga:        '#3a5a3a', taigaH:       '#4a6a4a',
-  };
-
-  // ===== NORTH AMERICA =====
-  // Alaska
-  drawLand(
-    [71, 70, 68, 66, 64, 62, 60, 58, 56, 55, 56, 58, 60, 62, 64, 66, 68, 70, 71],
-    [-165, -162, -157, -153, -150, -147, -143, -140, -135, -132, -155, -160, -163, -165, -166, -165, -163, -162, -165],
-    C.tundra, C.tundraH
-  );
-  // Alaska Peninsula
-  drawLand(
-    [58, 57, 55, 54, 53, 52, 53, 55, 57, 58],
-    [-155, -158, -162, -165, -168, -170, -172, -168, -160, -155],
-    C.tundra, C.tundraH
-  );
-  // Canada - Northern
-  drawLand(
-    [72, 70, 68, 66, 64, 62, 60, 58, 55, 52, 50, 48, 48, 50, 52, 55, 58, 60, 62, 65, 68, 70, 72],
-    [-140, -132, -120, -110, -95, -82, -72, -65, -58, -55, -56, -60, -80, -88, -95, -100, -110, -118, -125, -130, -135, -138, -140],
-    C.taiga, C.tundra
-  );
-  // Canadian Arctic Islands
-  drawLand(
-    [78, 76, 74, 72, 70, 70, 72, 74, 76, 78],
-    [-95, -88, -82, -78, -75, -95, -100, -102, -100, -95],
-    C.ice, C.iceH
-  );
-  drawLand(
-    [80, 78, 76, 75, 75, 76, 78, 80],
-    [-80, -72, -68, -65, -80, -85, -85, -80],
-    C.ice, C.iceH
-  );
-  // Baffin Island
-  drawLand(
-    [74, 72, 70, 68, 64, 62, 63, 66, 68, 70, 72, 74],
-    [-72, -68, -65, -62, -64, -68, -75, -78, -78, -76, -74, -72],
-    C.tundra, C.tundraH
-  );
-  // US + Southern Canada mainland
-  drawLand(
-    [50, 49, 48, 47, 46, 45, 43, 40, 38, 35, 33, 31, 30, 28, 26, 25, 25, 27, 29, 30, 30, 33, 35, 38, 40, 42, 44, 46, 48, 49, 50],
-    [-128, -125, -124, -124, -124, -124, -124, -123, -122, -120, -118, -115, -112, -108, -100, -97, -82, -80, -82, -84, -88, -85, -78, -76, -74, -72, -70, -68, -66, -64, -56],
-    C.forest, C.forestH
-  );
-  // Great Lakes region (slightly different color for visual interest)
-  drawLand(
-    [49, 48, 46, 44, 42, 41, 42, 44, 46, 48, 49],
-    [-92, -88, -84, -82, -80, -83, -87, -90, -92, -93, -92],
-    C.forest, '#2a6e3e'
-  );
-  // Florida
-  drawLand(
-    [31, 30, 29, 28, 26, 25, 25, 26, 27, 29, 30, 31],
-    [-87, -85, -83, -82, -81, -80, -81, -82, -82, -83, -85, -87],
-    C.tropical, C.tropicalH
-  );
-  // US Southwest desert
-  drawLand(
-    [38, 36, 34, 32, 30, 28, 30, 32, 34, 36, 38],
-    [-120, -118, -116, -114, -112, -108, -106, -106, -108, -112, -115],
-    C.desert, C.desertH
-  );
-  // Mexico
-  drawLand(
-    [32, 30, 28, 26, 24, 22, 20, 18, 16, 15, 16, 18, 20, 22, 24, 28, 30, 32],
-    [-117, -115, -112, -110, -108, -106, -105, -103, -96, -92, -90, -92, -97, -100, -104, -108, -112, -115],
-    C.arid, C.desert
-  );
-  // Yucatan Peninsula
-  drawLand(
-    [22, 21, 20, 18, 18, 20, 21, 22],
-    [-92, -90, -88, -87, -90, -91, -91, -92],
-    C.tropical, C.tropicalH
-  );
-  // Central America
-  drawLand(
-    [16, 15, 14, 12, 10, 9, 8, 7, 8, 9, 10, 12, 14, 15, 16],
-    [-90, -89, -88, -86, -84, -82, -80, -78, -77, -79, -82, -84, -86, -88, -90],
-    C.tropical, C.tropicalH
-  );
-  // Cuba
-  drawLand(
-    [23, 22.5, 22, 21, 20, 20, 20.5, 21, 22, 22.5, 23],
-    [-84, -82, -80, -78, -76, -75, -77, -79, -81, -83, -84],
-    C.tropical, C.tropicalH
-  );
-  // Hispaniola
-  drawLand(
-    [20, 19.5, 19, 18.5, 18.5, 19, 19.5, 20],
-    [-74, -72, -70, -69, -71, -73, -74, -74],
-    C.tropical, C.tropicalH
-  );
-  // Greenland
-  drawLand(
-    [84, 83, 81, 79, 77, 75, 72, 70, 68, 65, 62, 60, 60, 62, 65, 68, 70, 72, 74, 76, 78, 80, 82, 84],
-    [-38, -28, -20, -18, -18, -19, -22, -25, -30, -40, -46, -48, -52, -54, -54, -52, -50, -48, -46, -44, -42, -40, -38, -38],
-    C.ice, C.iceH
-  );
-
-  // ===== SOUTH AMERICA =====
-  drawLand(
-    [12, 10, 8, 6, 4, 2, 0, -2, -4, -6, -8, -10, -12, -15, -18, -20, -23, -26, -30, -33, -36, -40, -44, -48, -52, -55, -55, -52, -48, -44, -40, -36, -33, -30, -26, -23, -20, -18, -15, -12, -10, -8, -5, -2, 0, 2, 4, 6, 8, 10, 12],
-    [-72, -70, -65, -60, -55, -51, -50, -48, -45, -42, -40, -38, -38, -39, -40, -41, -43, -46, -50, -53, -57, -62, -66, -70, -72, -70, -68, -68, -66, -64, -62, -58, -54, -52, -48, -46, -44, -42, -41, -40, -38, -36, -35, -50, -52, -55, -58, -62, -66, -70, -72],
-    C.tropical, C.forest
-  );
-  // Amazon basin overlay
-  drawLand(
-    [2, 0, -2, -4, -6, -8, -10, -12, -10, -8, -5, -2, 0, 2],
-    [-55, -52, -50, -48, -46, -44, -46, -52, -58, -62, -64, -62, -58, -55],
-    C.darkJungle, C.darkJungleH
-  );
-  // Andes mountains
-  drawLand(
-    [4, 2, 0, -4, -8, -12, -16, -20, -24, -28, -32, -36, -40, -44, -48, -52, -52, -48, -44, -40, -36, -32, -28, -24, -20, -16, -12, -8, -4, 0, 2, 4],
-    [-78, -79, -80, -80, -79, -78, -76, -72, -70, -70, -71, -72, -72, -73, -74, -75, -72, -71, -70, -69, -68, -67, -67, -67, -68, -72, -74, -76, -77, -78, -77, -76],
-    C.mountain, C.mountainH
-  );
-  // Patagonia steppe
-  drawLand(
-    [-40, -44, -48, -52, -55, -55, -52, -48, -44, -40],
-    [-66, -68, -72, -72, -70, -68, -66, -64, -62, -62],
-    C.steppe, C.steppeH
-  );
-
-  // ===== EUROPE =====
-  // Scandinavia (Norway + Sweden)
-  drawLand(
-    [71, 70, 69, 68, 66, 64, 62, 60, 58, 56, 56, 58, 60, 62, 64, 66, 68, 70, 71],
-    [24, 28, 30, 30, 28, 25, 22, 18, 14, 10, 6, 6, 8, 10, 12, 14, 16, 18, 24],
-    C.taiga, C.forest
-  );
-  // Finland
-  drawLand(
-    [70, 68, 66, 64, 62, 60, 60, 62, 64, 66, 68, 70],
-    [26, 28, 29, 28, 27, 25, 22, 22, 23, 24, 25, 26],
-    C.taiga, C.tundra
-  );
-  // British Isles - Great Britain
-  drawLand(
-    [59, 57, 56, 55, 54, 53, 52, 51, 50, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
-    [-5, -4, -3, -2, -1, 0, 1, 1, -1, -4, -5, -5, -4, -4, -5, -5, -6, -6, -5],
-    C.forest, C.forestH
-  );
-  // Ireland
-  drawLand(
-    [55, 54, 53, 52, 51.5, 51.5, 52, 53, 54, 55],
-    [-8, -7, -6, -6, -7, -10, -10, -10, -10, -8],
-    C.forest, C.forestH
-  );
-  // Iceland
-  drawLand(
-    [66.5, 66, 65.5, 64.5, 64, 63.5, 64, 65, 66, 66.5],
-    [-22, -18, -15, -14, -15, -18, -22, -24, -24, -22],
-    C.tundra, C.tundraH
-  );
-  // Western Europe (France, Benelux, W Germany)
-  drawLand(
-    [51, 50, 49, 48, 47, 46, 44, 43, 42, 43, 44, 46, 47, 48, 49, 50, 51],
-    [-4, -3, -2, -2, -1, 0, 0, 2, 3, 5, 6, 7, 8, 8, 7, 6, 4],
-    C.forest, C.forestH
-  );
-  // Central Europe
-  drawLand(
-    [55, 54, 52, 50, 48, 47, 46, 46, 47, 48, 50, 52, 54, 55],
-    [8, 10, 14, 16, 18, 16, 14, 10, 8, 7, 6, 6, 7, 8],
-    C.forest, C.forestH
-  );
-  // Eastern Europe (Poland, Baltics, W Russia)
-  drawLand(
-    [60, 58, 56, 54, 52, 50, 48, 46, 46, 48, 50, 52, 54, 56, 58, 60],
-    [20, 22, 24, 24, 24, 24, 26, 28, 32, 34, 36, 38, 38, 36, 32, 28],
-    C.forest, C.taiga
-  );
-  // Iberian Peninsula
-  drawLand(
-    [44, 43, 42, 40, 38, 37, 36, 37, 38, 40, 42, 43, 44],
-    [-9, -8, -9, -9, -8, -6, -5, -2, 0, 2, 3, 2, 0],
-    C.savanna, C.arid
-  );
-  // Italy boot
-  drawLand(
-    [46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46],
-    [7, 8, 9, 10, 11, 13, 15, 16, 16, 15, 13, 12, 12, 13, 14, 15, 14, 12, 10],
-    C.forest, C.savanna
-  );
-  // Sicily
-  drawLand(
-    [38.5, 38, 37, 37, 38, 38.5],
-    [13, 12, 13, 15, 16, 15],
-    C.savanna, C.savannaH
-  );
-  // Balkans / Greece
-  drawLand(
-    [46, 44, 42, 40, 38, 37, 38, 40, 42, 44, 46],
-    [16, 18, 20, 22, 24, 22, 20, 18, 16, 15, 16],
-    C.forest, C.savanna
-  );
-  // Greece peninsula
-  drawLand(
-    [40, 39, 38, 37, 36, 37, 38, 39, 40],
-    [20, 21, 22, 23, 22, 20, 20, 20, 20],
-    C.savanna, C.savannaH
-  );
-
-  // ===== AFRICA =====
-  // Main continent
-  drawLand(
-    [37, 35, 33, 31, 28, 25, 22, 18, 14, 10, 6, 2, -2, -5, -8, -12, -16, -20, -24, -28, -32, -35, -34, -30, -26, -22, -18, -14, -10, -6, -2, 2, 6, 10, 14, 18, 22, 25, 28, 30, 32, 35, 37],
-    [-8, -5, -2, 0, 2, 5, 8, 12, 14, 12, 10, 10, 10, 12, 14, 18, 22, 28, 32, 34, 30, 26, 20, 16, 16, 20, 28, 35, 40, 43, 46, 48, 50, 50, 48, 45, 40, 38, 35, 33, 30, 20, 10],
-    C.desert, C.savanna
-  );
-  // Sahara Desert
-  drawLand(
-    [35, 33, 30, 27, 24, 20, 17, 17, 20, 24, 27, 30, 33, 35],
-    [-10, -6, -2, 0, 3, 8, 12, 32, 36, 36, 34, 32, 28, 18],
-    C.desert, C.desertH
-  );
-  // West Africa tropical
-  drawLand(
-    [12, 10, 8, 5, 4, 4, 5, 8, 10, 12],
-    [-16, -14, -12, -8, -5, 2, 5, 8, 10, 8],
-    C.tropical, C.tropicalH
-  );
-  // Congo Basin
-  drawLand(
-    [6, 4, 2, 0, -2, -5, -5, -2, 0, 2, 4, 6],
-    [10, 12, 12, 14, 16, 18, 28, 30, 30, 28, 26, 22],
-    C.darkJungle, C.darkJungleH
-  );
-  // East African highlands
-  drawLand(
-    [10, 8, 5, 2, 0, -3, -6, -10, -8, -5, -2, 0, 3, 6, 8, 10],
-    [32, 34, 36, 38, 40, 42, 40, 38, 36, 34, 33, 33, 33, 34, 34, 32],
-    C.savanna, C.savannaH
-  );
-  // Southern Africa
-  drawLand(
-    [-16, -20, -24, -28, -32, -35, -34, -30, -26, -22, -18, -16],
-    [20, 18, 16, 18, 20, 26, 30, 33, 34, 35, 34, 32],
-    C.savanna, C.steppe
-  );
-  // Horn of Africa
-  drawLand(
-    [12, 10, 8, 5, 2, 0, 2, 5, 8, 10, 12],
-    [42, 44, 46, 48, 50, 48, 46, 44, 42, 42, 42],
-    C.arid, C.desert
-  );
-  // Madagascar
-  drawLand(
-    [-12, -14, -16, -18, -20, -22, -24, -26, -25, -23, -20, -18, -16, -14, -12],
-    [49, 50, 50, 49, 48, 47, 46, 44, 43, 44, 44, 45, 46, 48, 49],
-    C.tropical, C.tropicalH
-  );
-
-  // ===== ASIA =====
-  // Russia - Western
-  drawLand(
-    [72, 70, 68, 65, 62, 58, 55, 52, 50, 48, 46, 46, 48, 50, 52, 55, 58, 60, 62, 65, 68, 70, 72],
-    [28, 30, 32, 35, 38, 42, 44, 46, 48, 50, 52, 58, 60, 62, 64, 65, 65, 62, 58, 55, 50, 42, 35],
-    C.taiga, C.forest
-  );
-  // Russia - Siberia
-  drawLand(
-    [75, 73, 72, 70, 68, 65, 62, 58, 55, 52, 50, 48, 46, 44, 42, 42, 44, 46, 48, 50, 52, 55, 58, 62, 65, 68, 70, 72, 74, 75],
-    [60, 65, 70, 80, 90, 100, 110, 120, 130, 135, 140, 142, 140, 135, 132, 140, 145, 150, 155, 160, 165, 170, 175, 180, 175, 170, 160, 150, 140, 120],
-    C.tundra, C.taiga
-  );
-  // Kamchatka
-  drawLand(
-    [62, 60, 58, 56, 54, 52, 51, 52, 54, 56, 58, 60, 62],
-    [160, 162, 163, 164, 162, 160, 158, 156, 156, 157, 158, 159, 160],
-    C.tundra, C.tundraH
-  );
-  // Middle East
-  drawLand(
-    [38, 37, 36, 35, 34, 33, 32, 30, 28, 26, 24, 22, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38],
-    [26, 28, 30, 32, 34, 36, 36, 38, 40, 42, 44, 48, 52, 56, 58, 58, 56, 52, 48, 44, 40, 35],
-    C.desert, C.arid
-  );
-  // Arabian Peninsula
-  drawLand(
-    [30, 28, 26, 24, 22, 18, 15, 12, 14, 16, 18, 22, 24, 26, 28, 30],
-    [35, 36, 38, 42, 48, 52, 54, 50, 46, 44, 42, 40, 38, 36, 35, 35],
-    C.desert, C.desertH
-  );
-  // Iran/Afghanistan
-  drawLand(
-    [40, 38, 36, 34, 32, 30, 28, 26, 26, 28, 30, 32, 34, 36, 38, 40],
-    [44, 48, 52, 56, 60, 64, 68, 66, 62, 58, 54, 50, 46, 44, 44, 44],
-    C.arid, C.desert
-  );
-  // Central Asia steppe
-  drawLand(
-    [52, 50, 48, 46, 44, 42, 40, 38, 36, 38, 40, 42, 44, 46, 48, 50, 52],
-    [52, 55, 58, 62, 66, 70, 74, 78, 80, 82, 82, 80, 78, 74, 70, 65, 60],
-    C.steppe, C.steppeH
-  );
-  // India - triangle shape
-  drawLand(
-    [35, 33, 30, 28, 26, 24, 22, 20, 18, 15, 12, 10, 8, 8, 10, 12, 15, 18, 20, 22, 24, 26, 28, 30, 32, 35],
-    [72, 74, 76, 78, 80, 82, 84, 85, 84, 82, 80, 78, 77, 73, 72, 72, 73, 74, 74, 73, 72, 70, 68, 68, 70, 72],
-    C.tropical, C.savanna
-  );
-  // Sri Lanka - teardrop
-  drawLand(
-    [10, 9, 8, 7, 6, 6.5, 7.5, 8.5, 9.5, 10],
-    [80, 80.5, 81, 81.5, 81, 80, 79.5, 79.5, 80, 80],
-    C.tropical, C.tropicalH
-  );
-  // Himalayas
-  drawLand(
-    [37, 36, 35, 33, 31, 29, 27, 28, 30, 32, 34, 36, 37],
-    [74, 78, 82, 86, 90, 94, 97, 98, 96, 92, 88, 82, 78],
-    C.mountain, C.ice
-  );
-  // China mainland
-  drawLand(
-    [50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 30, 28, 25, 22, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50],
-    [82, 86, 90, 94, 98, 102, 106, 108, 110, 112, 114, 118, 120, 118, 110, 108, 106, 104, 102, 100, 98, 96, 96, 98, 100, 104, 108, 112, 116, 120],
-    C.forest, C.steppe
-  );
-  // Southeast China green
-  drawLand(
-    [34, 32, 30, 28, 25, 22, 20, 22, 25, 28, 30, 32, 34],
-    [106, 108, 112, 116, 120, 118, 110, 106, 104, 102, 104, 106, 106],
-    C.tropical, C.forest
-  );
-  // Mongolia
-  drawLand(
-    [52, 50, 48, 46, 44, 42, 42, 44, 46, 48, 50, 52],
-    [88, 92, 96, 100, 106, 112, 118, 120, 118, 116, 112, 100],
-    C.steppe, C.desert
-  );
-  // Korea Peninsula
-  drawLand(
-    [43, 42, 40, 38, 37, 35, 34, 34, 35, 37, 38, 40, 42, 43],
-    [125, 126, 127, 127, 126, 127, 128, 130, 130, 129, 129, 128, 127, 126],
-    C.forest, C.forestH
-  );
-  // Japan - Hokkaido
-  drawLand(
-    [46, 45, 44, 43, 42, 42, 43, 44, 45, 46],
-    [140, 142, 144, 145, 144, 141, 140, 140, 140, 140],
-    C.forest, C.forestH
-  );
-  // Japan - Honshu
-  drawLand(
-    [42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42],
-    [140, 141, 140, 140, 139, 138, 137, 136, 135, 133, 132, 133, 135, 137, 138, 139, 139, 140, 140],
-    C.forest, C.forestH
-  );
-  // Japan - Shikoku
-  drawLand(
-    [34.5, 34, 33, 33, 34, 34.5],
-    [133, 134, 134, 132, 132, 133],
-    C.forest, C.forestH
-  );
-  // Japan - Kyushu
-  drawLand(
-    [34, 33.5, 33, 32, 31, 31, 32, 33, 33.5, 34],
-    [130, 131, 132, 131, 131, 130, 129, 130, 130, 130],
-    C.forest, C.forestH
-  );
-  // Taiwan
-  drawLand(
-    [25.5, 25, 24, 23, 22, 22, 23, 24, 25, 25.5],
-    [121, 122, 122, 121.5, 121, 120, 120, 120.5, 121, 121],
-    C.tropical, C.forest
-  );
-  // Southeast Asia mainland (Indochina)
-  drawLand(
-    [24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24],
-    [98, 100, 102, 104, 106, 108, 108, 106, 104, 102, 100, 100, 104, 106, 106, 106, 106, 106, 106, 106, 104, 102, 100, 98, 96],
-    C.tropical, C.tropicalH
-  );
-  // Malay Peninsula
-  drawLand(
-    [8, 6, 4, 2, 1, 1, 2, 4, 6, 8],
-    [100, 100, 102, 103, 104, 102, 100, 100, 100, 100],
-    C.darkJungle, C.tropical
-  );
-  // Sumatra
-  drawLand(
-    [6, 4, 2, 0, -2, -4, -6, -5, -3, -1, 1, 3, 5, 6],
-    [95, 97, 99, 101, 103, 104, 105, 104, 102, 100, 98, 96, 95, 95],
-    C.tropical, C.darkJungle
-  );
-  // Java
-  drawLand(
-    [-6, -6.5, -7, -7.5, -8, -8.5, -8, -7.5, -7, -6.5, -6],
-    [105, 107, 109, 111, 113, 114, 114, 112, 110, 108, 106],
-    C.tropical, C.tropicalH
-  );
-  // Borneo / Kalimantan
-  drawLand(
-    [7, 5, 3, 1, -1, -3, -4, -4, -3, -1, 1, 3, 5, 7],
-    [109, 112, 114, 116, 118, 118, 116, 114, 112, 110, 108, 108, 108, 109],
-    C.darkJungle, C.tropical
-  );
-  // Sulawesi (K-shape simplified)
-  drawLand(
-    [2, 1, 0, -1, -2, -3, -4, -5, -5, -4, -3, -2, -1, 0, 1, 2],
-    [120, 121, 122, 123, 124, 124, 122, 121, 120, 120, 120, 121, 122, 122, 121, 120],
-    C.tropical, C.tropicalH
-  );
-  // Papua / New Guinea
-  drawLand(
-    [-1, -2, -4, -6, -8, -10, -10, -8, -6, -4, -2, -1],
-    [131, 134, 138, 142, 146, 150, 154, 155, 152, 148, 142, 136],
-    C.darkJungle, C.tropical
-  );
-  // Philippines - Luzon
-  drawLand(
-    [19, 18, 17, 16, 15, 14, 14, 15, 16, 17, 18, 19],
-    [120, 121, 122, 122, 121, 120, 119, 119, 119, 120, 120, 120],
-    C.tropical, C.tropicalH
-  );
-  // Philippines - Visayas/Mindanao
-  drawLand(
-    [13, 12, 10, 8, 6, 6, 7, 8, 10, 12, 13],
-    [122, 124, 126, 127, 126, 124, 122, 121, 120, 121, 122],
-    C.tropical, C.tropicalH
-  );
-
-  // ===== AUSTRALIA =====
-  drawLand(
-    [-11, -13, -15, -17, -20, -23, -25, -28, -30, -32, -34, -36, -38, -38, -36, -34, -32, -30, -28, -25, -22, -20, -18, -15, -13, -11],
-    [131, 136, 140, 144, 147, 150, 152, 153, 153, 152, 150, 148, 146, 142, 138, 134, 130, 126, 122, 118, 115, 114, 116, 120, 126, 131],
-    C.desert, C.arid
-  );
-  // Australia - Eastern coast (green)
-  drawLand(
-    [-14, -16, -18, -22, -26, -30, -34, -38, -37, -34, -30, -26, -22, -18, -14],
-    [144, 146, 148, 150, 152, 153, 152, 146, 145, 147, 150, 150, 148, 146, 144],
-    C.forest, C.tropical
-  );
-  // Australia - Northern tropical
-  drawLand(
-    [-11, -12, -14, -16, -18, -16, -14, -12, -11],
-    [130, 132, 134, 136, 134, 132, 130, 128, 130],
-    C.savanna, C.tropical
-  );
-  // New Zealand - North Island
-  drawLand(
-    [-35, -36, -37, -38, -39, -40, -41, -41, -40, -39, -38, -37, -36, -35],
-    [173, 175, 176, 177, 177, 176, 175, 174, 173, 173, 174, 174, 174, 173],
-    C.forest, C.forestH
-  );
-  // New Zealand - South Island
-  drawLand(
-    [-41, -42, -43, -44, -45, -46, -47, -47, -46, -45, -44, -43, -42, -41],
-    [173, 174, 172, 170, 168, 167, 168, 170, 171, 172, 172, 172, 172, 173],
-    C.forest, C.forestH
-  );
-
-  // ===== POLAR REGIONS =====
-  // Antarctic
-  drawLand(
-    [-62, -65, -68, -72, -78, -85, -90, -90, -85, -78, -72, -68, -65, -62],
-    [-180, -140, -100, -60, -30, 0, 30, 60, 90, 120, 150, 170, 180, 180],
-    C.ice, C.iceH
-  );
-  // Arctic ice patches
-  drawLand(
-    [88, 86, 84, 82, 80, 80, 82, 84, 86, 88],
-    [0, 40, 80, 120, 160, -160, -120, -80, -40, 0],
-    C.ice, C.iceH
-  );
-
-  // ===== OCEAN DETAILS =====
-  // Add subtle ocean depth variation
-  for (let y = 0; y < height; y += 6) {
-    for (let x = 0; x < width; x += 6) {
-      const pixel = ctx.getImageData(x, y, 1, 1).data;
-      if (pixel[0] < 25 && pixel[1] < 65 && pixel[2] > 60) {
-        const lat = 90 - (y / height) * 180;
-        // Polar ice on ocean
-        if (Math.abs(lat) > 72) {
-          const iceFactor = (Math.abs(lat) - 72) / 18;
-          const noise = (Math.sin(x * 0.04) * Math.cos(y * 0.03) + 1) * 0.5;
-          const iceR = Math.floor(190 + noise * 50);
-          const iceG = Math.floor(210 + noise * 40);
-          const iceB = Math.floor(235 + noise * 20);
-          ctx.fillStyle = `rgba(${iceR}, ${iceG}, ${iceB}, ${Math.min(1, iceFactor * 0.6)})`;
-          ctx.fillRect(x, y, 6, 6);
-        }
+    function tryLoad() {
+      if (attempted >= urls.length) {
+        // Fallback: generate procedural texture
+        resolve(generateFallbackTexture());
+        return;
       }
+      loader.load(
+        urls[attempted],
+        (texture) => {
+          texture.anisotropy = 4;
+          resolve(texture);
+        },
+        undefined,
+        () => {
+          attempted++;
+          tryLoad();
+        }
+      );
     }
-  }
 
-  return canvas;
+    tryLoad();
+  });
 }
 
-// ============================================================
-// BUMP MAP
-// ============================================================
-function generateBumpTexture(width, height) {
+function loadBumpTexture() {
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader();
+    const urls = [
+      'https://unpkg.com/three-globe@2.31.1/example/img/earth-topology.png',
+      'https://unpkg.com/three-globe@2.24.1/example/img/earth-topology.png',
+    ];
+    let attempted = 0;
+    function tryLoad() {
+      if (attempted >= urls.length) {
+        resolve(null);
+        return;
+      }
+      loader.load(urls[attempted], (tex) => resolve(tex), undefined, () => { attempted++; tryLoad(); });
+    }
+    tryLoad();
+  });
+}
+
+function loadWaterTexture() {
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader();
+    const urls = [
+      'https://unpkg.com/three-globe@2.31.1/example/img/earth-water.png',
+      'https://unpkg.com/three-globe@2.24.1/example/img/earth-water.png',
+    ];
+    let attempted = 0;
+    function tryLoad() {
+      if (attempted >= urls.length) {
+        resolve(null);
+        return;
+      }
+      loader.load(urls[attempted], (tex) => resolve(tex), undefined, () => { attempted++; tryLoad(); });
+    }
+    tryLoad();
+  });
+}
+
+function loadCloudTexture() {
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader();
+    const urls = [
+      'https://unpkg.com/three-globe@2.31.1/example/img/earth-clouds.png',
+      'https://unpkg.com/three-globe@2.24.1/example/img/earth-clouds.png',
+    ];
+    let attempted = 0;
+    function tryLoad() {
+      if (attempted >= urls.length) {
+        resolve(generateProceduralClouds());
+        return;
+      }
+      loader.load(urls[attempted], (tex) => resolve(tex), undefined, () => { attempted++; tryLoad(); });
+    }
+    tryLoad();
+  });
+}
+
+/**
+ * Fallback procedural Earth texture if CDN textures fail
+ */
+function generateFallbackTexture() {
+  const w = 2048, h = 1024;
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = w; canvas.height = h;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#000000';
-  ctx.fillRect(0, 0, width, height);
+  // Ocean gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, '#0b1a3a');
+  grad.addColorStop(0.2, '#0a2555');
+  grad.addColorStop(0.5, '#0e3570');
+  grad.addColorStop(0.8, '#0a2555');
+  grad.addColorStop(1, '#0b1a3a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
 
-  function lngToX(lng) { return ((lng + 180) / 360) * width; }
-  function latToY(lat) { return ((90 - lat) / 180) * height; }
+  function lngToX(lng) { return ((lng + 180) / 360) * w; }
+  function latToY(lat) { return ((90 - lat) / 180) * h; }
 
-  function drawBump(lats, lngs, intensity) {
-    if (lats.length < 3) return;
+  function drawShape(coords, color) {
     ctx.beginPath();
-    ctx.moveTo(lngToX(lngs[0]), latToY(lats[0]));
-    for (let i = 1; i < lats.length; i++) {
-      ctx.lineTo(lngToX(lngs[i]), latToY(lats[i]));
+    ctx.moveTo(lngToX(coords[0][1]), latToY(coords[0][0]));
+    for (let i = 1; i < coords.length; i++) {
+      ctx.lineTo(lngToX(coords[i][1]), latToY(coords[i][0]));
     }
     ctx.closePath();
-    const v = Math.floor(intensity * 255);
-    ctx.fillStyle = `rgb(${v}, ${v}, ${v})`;
+    ctx.fillStyle = color;
     ctx.fill();
   }
 
-  // Mountain ranges - high bump
-  // Himalayas
-  drawBump([37, 36, 35, 33, 31, 29, 27, 28, 30, 32, 34, 36, 37], [74, 78, 82, 86, 90, 94, 97, 98, 96, 92, 88, 82, 78], 0.9);
-  // Andes
-  drawBump([4, 0, -8, -16, -24, -36, -48, -52, -52, -48, -36, -24, -16, -8, 0, 4], [-78, -80, -79, -76, -70, -72, -74, -75, -72, -71, -68, -67, -72, -76, -78, -76], 0.85);
-  // Rockies
-  drawBump([55, 50, 45, 40, 35, 30, 32, 35, 40, 45, 50, 55], [-125, -120, -115, -112, -110, -108, -105, -105, -108, -112, -118, -122], 0.7);
-  // Alps
-  drawBump([48, 47, 46, 44, 44, 46, 47, 48], [5, 8, 12, 16, 14, 10, 7, 5], 0.65);
-  // Urals
-  drawBump([68, 65, 60, 55, 50, 50, 55, 60, 65, 68], [58, 60, 60, 58, 56, 62, 64, 64, 62, 60], 0.5);
-  // East African Rift
-  drawBump([10, 5, 0, -5, -10, -8, -4, 0, 4, 8, 10], [34, 36, 38, 40, 38, 36, 34, 33, 33, 34, 34], 0.6);
+  // Simplified but cleaner continent shapes using [lat, lng] pairs
+  // North America
+  drawShape([
+    [70,-140],[68,-130],[62,-110],[55,-80],[48,-65],[45,-67],[42,-70],[40,-74],
+    [38,-76],[35,-78],[33,-85],[30,-88],[28,-82],[25,-80],[25,-97],[26,-100],
+    [28,-108],[30,-112],[33,-118],[35,-120],[38,-122],[42,-124],[45,-124],
+    [48,-124],[49,-125],[50,-128],[55,-132],[60,-140],[65,-145],[68,-155],[70,-160]
+  ], '#1e6b35');
 
-  // General land areas - low bump
-  const landBumps = [
-    { lats: [72, 25, 25, 72], lngs: [-170, -170, -50, -50], b: 0.18 },
-    { lats: [15, -55, -55, 15], lngs: [-82, -82, -34, -34], b: 0.22 },
-    { lats: [72, 35, 35, 72], lngs: [-12, -12, 42, 42], b: 0.18 },
-    { lats: [37, -35, -35, 37], lngs: [-18, -18, 55, 55], b: 0.18 },
-    { lats: [75, 5, 5, 75], lngs: [25, 25, 180, 180], b: 0.18 },
-    { lats: [-10, -45, -45, -10], lngs: [110, 110, 160, 160], b: 0.14 },
-  ];
-  landBumps.forEach(r => drawBump(r.lats, r.lngs, r.b));
+  // South America
+  drawShape([
+    [12,-72],[10,-68],[8,-63],[5,-58],[2,-51],[0,-50],[-5,-45],[-10,-38],
+    [-15,-39],[-20,-41],[-25,-43],[-30,-50],[-35,-57],[-40,-62],[-45,-66],
+    [-50,-72],[-55,-70],[-55,-68],[-50,-65],[-45,-62],[-40,-58],[-35,-52],
+    [-30,-48],[-25,-45],[-20,-42],[-15,-40],[-10,-38],[-5,-35],[0,-50],
+    [5,-55],[8,-60],[10,-65]
+  ], '#1a6b35');
 
-  return canvas;
+  // Africa
+  drawShape([
+    [37,-10],[35,-5],[32,0],[28,5],[22,10],[15,15],[10,12],[5,10],[0,10],
+    [-5,12],[-10,15],[-15,20],[-20,28],[-25,32],[-30,30],[-35,26],[-35,18],
+    [-30,16],[-25,15],[-20,20],[-15,30],[-10,38],[-5,42],[0,45],[5,48],
+    [10,50],[15,50],[20,45],[25,40],[28,35],[30,33],[32,28],[35,20]
+  ], '#c4a35a');
+
+  // Europe
+  drawShape([
+    [72,20],[70,28],[68,30],[65,28],[62,25],[60,18],[58,14],[56,10],
+    [54,10],[52,5],[50,-5],[48,-5],[46,-2],[44,0],[42,-2],[40,-5],
+    [37,-8],[36,-6],[37,0],[40,3],[42,5],[44,7],[46,8],[48,8],
+    [50,6],[52,8],[54,14],[56,16],[58,20],[60,24],[62,26],[65,28],
+    [68,26],[70,24]
+  ], '#2d7a3e');
+
+  // Asia (Russia + Central/East Asia)
+  drawShape([
+    [72,30],[70,40],[68,50],[65,60],[62,70],[58,80],[55,90],[52,100],
+    [50,110],[48,120],[45,130],[42,132],[40,130],[38,128],[36,127],
+    [34,110],[32,105],[30,100],[28,95],[26,90],[24,82],[22,78],
+    [20,75],[18,74],[15,73],[12,72],[10,78],[8,77],[8,73],[12,70],
+    [18,68],[22,62],[26,55],[30,48],[34,36],[38,28],[42,28],
+    [46,30],[50,32],[55,35],[60,38],[65,40],[70,35]
+  ], '#6b8c6b');
+
+  // India
+  drawShape([
+    [35,72],[32,74],[28,76],[24,78],[20,80],[16,80],[12,80],[8,78],
+    [8,73],[12,72],[16,73],[20,74],[24,72],[28,70],[32,70]
+  ], '#8a9a3a');
+
+  // Australia
+  drawShape([
+    [-11,131],[-13,136],[-15,140],[-18,145],[-22,148],[-25,152],
+    [-28,153],[-32,152],[-35,150],[-38,146],[-38,142],[-35,138],
+    [-32,130],[-28,122],[-25,118],[-22,115],[-18,116],[-15,120],
+    [-13,126]
+  ], '#b09060');
+
+  // Japan
+  drawShape([[45,142],[42,143],[40,140],[38,138],[36,137],[34,134],[33,132],[34,133],[36,135],[38,137],[40,139],[42,141]], '#2d7a3e');
+
+  // Indonesia islands (simplified)
+  drawShape([[6,95],[2,100],[-2,104],[-6,108],[-8,110],[-6,112],[-2,110],[2,106],[6,100]], '#1a6b35');
+  drawShape([[7,109],[4,112],[0,116],[-3,118],[-4,116],[-2,112],[2,108],[5,108]], '#1a6b35');
+
+  // Greenland
+  drawShape([[84,-38],[82,-28],[78,-18],[74,-20],[70,-25],[66,-40],[62,-48],[60,-52],[62,-54],[66,-54],[70,-52],[74,-48],[78,-44],[82,-40]], '#d0e4f0');
+
+  // Antarctica
+  drawShape([[-65,-180],[-70,-140],[-78,-100],[-85,-60],[-90,0],[-85,60],[-78,100],[-70,140],[-65,180]], '#d8e8f0');
+
+  // New Zealand
+  drawShape([[-35,173],[-38,176],[-41,175],[-41,173],[-38,174]], '#2d7a3e');
+  drawShape([[-41,173],[-44,170],[-47,168],[-47,170],[-44,172]], '#2d7a3e');
+
+  // Madagascar
+  drawShape([[-12,49],[-16,50],[-20,48],[-25,46],[-25,44],[-20,44],[-16,46],[-12,48]], '#1a6b35');
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.anisotropy = 4;
+  return texture;
 }
 
-// ============================================================
-// SPECULAR MAP
-// ============================================================
-function generateSpecularTexture(width, height) {
+function generateProceduralClouds() {
+  const w = 1024, h = 512;
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = w; canvas.height = h;
   const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
 
-  // Ocean = reflective (bright), land = non-reflective (dark)
-  ctx.fillStyle = '#3a6699';
-  ctx.fillRect(0, 0, width, height);
-
-  function lngToX(lng) { return ((lng + 180) / 360) * width; }
-  function latToY(lat) { return ((90 - lat) / 180) * height; }
-
-  function drawMask(lats, lngs) {
-    if (lats.length < 3) return;
-    ctx.beginPath();
-    ctx.moveTo(lngToX(lngs[0]), latToY(lats[0]));
-    for (let i = 1; i < lats.length; i++) {
-      ctx.lineTo(lngToX(lngs[i]), latToY(lats[i]));
-    }
-    ctx.closePath();
-    ctx.fillStyle = '#000000';
-    ctx.fill();
-  }
-
-  // Major landmasses (generous bounding)
-  drawMask([75, 20, 20, 75], [-175, -175, -50, -50]);
-  drawMask([15, -58, -58, 15], [-85, -85, -30, -30]);
-  drawMask([72, 35, 35, 72], [-15, -15, 45, 45]);
-  drawMask([38, -36, -36, 38], [-20, -20, 55, 55]);
-  drawMask([76, 0, 0, 76], [25, 25, 180, 180]);
-  drawMask([36, 0, 0, 36], [65, 65, 100, 100]);
-  drawMask([-8, -42, -42, -8], [110, 110, 160, 160]);
-  drawMask([85, 58, 58, 85], [-75, -75, -10, -10]);
-  drawMask([-58, -90, -90, -58], [-180, -180, 180, 180]);
-  // Islands
-  drawMask([10, -10, -10, 10], [95, 95, 125, 125]); // SE Asia islands
-  drawMask([48, 30, 30, 48], [128, 128, 148, 148]); // Japan
-
-  return canvas;
-}
-
-// ============================================================
-// CLOUD TEXTURE
-// ============================================================
-function generateCloudTexture(width, height) {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-
-  ctx.clearRect(0, 0, width, height);
-
-  for (let i = 0; i < 300; i++) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const lat = 90 - (y / height) * 180;
-
+  for (let i = 0; i < 250; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const lat = 90 - (y / h) * 180;
     let chance = 0.25;
     if (Math.abs(lat) < 15) chance = 0.45;
     if (Math.abs(lat) > 40 && Math.abs(lat) < 60) chance = 0.55;
-    if (Math.abs(lat) > 70) chance = 0.35;
-
     if (Math.random() < chance) {
-      const size = 8 + Math.random() * 50;
-      const opacity = 0.03 + Math.random() * 0.1;
-
+      const size = 8 + Math.random() * 45;
+      const opacity = 0.03 + Math.random() * 0.08;
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-      gradient.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
-      gradient.addColorStop(0.6, `rgba(255, 255, 255, ${opacity * 0.4})`);
-      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
+      gradient.addColorStop(0, `rgba(255,255,255,${opacity})`);
+      gradient.addColorStop(0.6, `rgba(255,255,255,${opacity * 0.3})`);
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(x - size, y - size, size * 2, size * 2);
     }
   }
 
-  return canvas;
+  const texture = new THREE.CanvasTexture(canvas);
+  return texture;
 }
 
-// ============================================================
-// MAP MANAGER CLASS
-// ============================================================
+/**
+ * MapManager - handles 3D globe rendering
+ */
 export class MapManager {
   constructor(containerId) {
     this.containerId = containerId;
@@ -869,14 +410,14 @@ export class MapManager {
     this.minZoom = 160;
     this.maxZoom = 500;
     this.globeGroup = null;
-    this.clock = new THREE.Clock();
     this.atmosphereMesh = null;
     this.starField = null;
     this.cloudMesh = null;
     this.labelSprites = [];
+    this.texturesLoaded = false;
   }
 
-  init() {
+  async init() {
     this.container = document.getElementById(this.containerId);
     if (!this.container) return this;
 
@@ -907,28 +448,36 @@ export class MapManager {
     this.globeGroup = new THREE.Group();
     this.scene.add(this.globeGroup);
 
-    // Build elements
+    // Create star field first (no async)
     this.createStarField();
-    this.createRealisticGlobe();
-    this.createCloudLayer();
+
+    // Load textures and build globe
+    await this.createGlobe();
+
+    // Atmosphere (no texture needed)
     this.createAtmosphere();
+
+    // Labels
     this.createCountryLabels();
 
+    // Grid
+    this.createGlobeGrid();
+
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x334466, 0.5);
-    this.scene.add(ambientLight);
+    const ambient = new THREE.AmbientLight(0x334466, 0.5);
+    this.scene.add(ambient);
 
-    const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.3);
-    sunLight.position.set(5, 3, 5);
-    this.scene.add(sunLight);
+    const sun = new THREE.DirectionalLight(0xfff5e0, 1.3);
+    sun.position.set(5, 3, 5);
+    this.scene.add(sun);
 
-    const fillLight = new THREE.DirectionalLight(0x4466aa, 0.25);
-    fillLight.position.set(-5, -1, -5);
-    this.scene.add(fillLight);
+    const fill = new THREE.DirectionalLight(0x4466aa, 0.25);
+    fill.position.set(-5, -1, -5);
+    this.scene.add(fill);
 
-    const rimLight = new THREE.DirectionalLight(0x88ccff, 0.15);
-    rimLight.position.set(0, 5, -3);
-    this.scene.add(rimLight);
+    const rim = new THREE.DirectionalLight(0x88ccff, 0.15);
+    rim.position.set(0, 5, -3);
+    this.scene.add(rim);
 
     this.setupEventListeners();
     this.animate();
@@ -979,49 +528,50 @@ export class MapManager {
     this.scene.add(this.starField);
   }
 
-  createRealisticGlobe() {
-    const texSize = 2048;
+  async createGlobe() {
+    // Load all textures in parallel
+    const [earthTex, bumpTex, waterTex, cloudTex] = await Promise.all([
+      loadEarthTexture(),
+      loadBumpTexture(),
+      loadWaterTexture(),
+      loadCloudTexture(),
+    ]);
 
-    const earthCanvas = generateEarthTexture(texSize, texSize);
-    const bumpCanvas = generateBumpTexture(texSize, texSize);
-    const specCanvas = generateSpecularTexture(texSize, texSize);
-
-    const earthTexture = new THREE.CanvasTexture(earthCanvas);
-    earthTexture.anisotropy = 4;
-    const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
-    const specTexture = new THREE.CanvasTexture(specCanvas);
-
+    // Earth sphere
     const globeGeo = new THREE.SphereGeometry(this.globeRadius, 128, 128);
-    const globeMat = new THREE.MeshPhongMaterial({
-      map: earthTexture,
-      bumpMap: bumpTexture,
-      bumpScale: 1.5,
-      specularMap: specTexture,
+    const matConfig = {
+      map: earthTex,
+      shininess: 15,
       specular: new THREE.Color(0x333333),
-      shininess: 12,
-    });
+    };
 
+    if (bumpTex) {
+      matConfig.bumpMap = bumpTex;
+      matConfig.bumpScale = 1.5;
+    }
+    if (waterTex) {
+      matConfig.specularMap = waterTex;
+    }
+
+    const globeMat = new THREE.MeshPhongMaterial(matConfig);
     this.globe = new THREE.Mesh(globeGeo, globeMat);
     this.globeGroup.add(this.globe);
 
-    this.createGlobeGrid();
-  }
+    // Cloud layer
+    if (cloudTex) {
+      const cloudGeo = new THREE.SphereGeometry(this.globeRadius + 1.0, 64, 64);
+      const cloudMat = new THREE.MeshPhongMaterial({
+        map: cloudTex,
+        transparent: true,
+        opacity: 0.2,
+        depthWrite: false,
+        side: THREE.FrontSide,
+      });
+      this.cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+      this.globeGroup.add(this.cloudMesh);
+    }
 
-  createCloudLayer() {
-    const cloudCanvas = generateCloudTexture(1024, 512);
-    const cloudTexture = new THREE.CanvasTexture(cloudCanvas);
-
-    const geo = new THREE.SphereGeometry(this.globeRadius + 1.0, 64, 64);
-    const mat = new THREE.MeshPhongMaterial({
-      map: cloudTexture,
-      transparent: true,
-      opacity: 0.25,
-      depthWrite: false,
-      side: THREE.FrontSide,
-    });
-
-    this.cloudMesh = new THREE.Mesh(geo, mat);
-    this.globeGroup.add(this.cloudMesh);
+    this.texturesLoaded = true;
   }
 
   createAtmosphere() {
@@ -1087,7 +637,6 @@ export class MapManager {
       opacity: 0.03,
     });
 
-    // Latitude lines every 30°
     for (let lat = -60; lat <= 60; lat += 30) {
       const pts = [];
       for (let lng = 0; lng <= 360; lng += 5) {
@@ -1096,7 +645,6 @@ export class MapManager {
       this.globeGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), gridMat));
     }
 
-    // Longitude lines every 30°
     for (let lng = -180; lng < 180; lng += 30) {
       const pts = [];
       for (let lat = -90; lat <= 90; lat += 5) {
@@ -1109,7 +657,7 @@ export class MapManager {
   createCountryLabels() {
     COUNTRY_LABELS.forEach(country => {
       const fontSize = 5 + country.size * 5;
-      const sprite = createTextSprite(country.name, fontSize, 'rgba(255, 255, 255, 0.82)');
+      const sprite = createTextSprite(country.name, fontSize, 'rgba(255, 255, 255, 0.88)');
       const pos = latLngToVector3(country.lat, country.lng, this.globeRadius + 2.0);
       sprite.position.copy(pos);
       sprite.userData = { lat: country.lat, lng: country.lng, baseRadius: this.globeRadius + 2.0 };
@@ -1157,7 +705,6 @@ export class MapManager {
       this.targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.targetZoom));
     }, { passive: false });
 
-    // Touch events
     let touchStartDist = 0;
     canvas.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
@@ -1327,7 +874,6 @@ export class MapManager {
     this.attackArcs = this.attackArcs.filter(arc => {
       const age = now - arc.createdAt;
       const total = arc.travelDuration + arc.fadeDuration;
-
       if (age > total) { this.removeArc(arc); return false; }
 
       const travelProgress = Math.min(age / arc.travelDuration, 1);
