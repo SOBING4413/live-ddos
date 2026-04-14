@@ -68,6 +68,7 @@
         <a href="#simulation" class="toc-link">7. Mode Simulasi</a>
         <a href="#glossary" class="toc-link">8. Glosarium</a>
         <a href="#faq" class="toc-link">9. FAQ</a>
+        <a href="#implementation" class="toc-link">10. Implementation Playbook</a>
       </div>
     </aside>
 
@@ -560,6 +561,53 @@ MapManager  UIManager
           <p>Platform ini dirancang untuk keperluan <strong>edukasi dan situational awareness</strong>. Untuk keperluan profesional threat intelligence, disarankan untuk menggunakan platform komersial seperti Recorded Future, Mandiant Advantage, atau CrowdStrike Falcon Intelligence yang menyediakan data yang lebih komprehensif dan actionable.</p>
         </div>
       </section>
+
+      <!-- 10. Implementation Playbook -->
+      <section id="implementation" class="docs-section">
+        <h2><span class="docs-num">10</span> Implementation Playbook</h2>
+        <p>Bagian ini merangkum langkah implementasi cepat agar tim dapat menjalankan platform secara konsisten dari environment lokal hingga staging.</p>
+
+        <div class="playbook-grid">
+          <article class="playbook-card">
+            <span class="playbook-chip">Quick Start</span>
+            <h3>Bootstrapping Lokal</h3>
+            <ol>
+              <li>Jalankan static server pada root project.</li>
+              <li>Buka <code>index.html</code> untuk landing page dan <code>live.html</code> untuk peta.</li>
+              <li>Pastikan browser mengizinkan koneksi HTTPS ke endpoint abuse.ch.</li>
+            </ol>
+          </article>
+
+          <article class="playbook-card">
+            <span class="playbook-chip">Deployment</span>
+            <h3>Hardening Rekomendasi</h3>
+            <ul>
+              <li>Gunakan reverse proxy internal agar CORS lebih stabil.</li>
+              <li>Tambahkan cache 60-120 detik untuk menghindari rate-limit feed.</li>
+              <li>Aktifkan CSP header dan strict transport security.</li>
+            </ul>
+          </article>
+
+          <article class="playbook-card">
+            <span class="playbook-chip">Operations</span>
+            <h3>Checklist Monitoring</h3>
+            <ul>
+              <li>Verifikasi status tiap feed minimal setiap 5 menit.</li>
+              <li>Pantau spike severity HIGH/CRITICAL untuk eskalasi cepat.</li>
+              <li>Review log fallback agar simulation mode tidak dominan.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="docs-callout docs-callout-info">
+          <div class="callout-icon">🧭</div>
+          <div>
+            <strong>Tips Integrasi SOC</strong>
+            <p>Untuk implementasi production, sambungkan event output ke SIEM/SOAR agar notifikasi dan otomatisasi respons bisa diproses dalam satu workflow operasional.</p>
+          </div>
+        </div>
+      </section>
+
 
     </main>
   </div>
