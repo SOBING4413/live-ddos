@@ -8,6 +8,38 @@
 
 import { ATTACK_TYPES } from './data.js';
 
+const EARTH_TEXTURE_CDN = {
+  // NASA Blue Marble (public domain) via CDN mirror.
+  color: 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+  bump: 'https://unpkg.com/three-globe/example/img/earth-topology.png',
+  specular: 'https://unpkg.com/three-globe/example/img/earth-water.png',
+  clouds: 'https://unpkg.com/three-globe/example/img/earth-clouds.png',
+};
+
+function loadTexture(url, renderer, { isColorMap = false } = {}) {
+  const loader = new THREE.TextureLoader();
+  return new Promise((resolve, reject) => {
+    loader.load(
+      url,
+      (texture) => {
+        if (renderer?.capabilities?.getMaxAnisotropy) {
+          texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        }
+        if (isColorMap) {
+          if ('colorSpace' in texture && THREE.SRGBColorSpace) {
+            texture.colorSpace = THREE.SRGBColorSpace;
+          } else if ('encoding' in texture && THREE.sRGBEncoding) {
+            texture.encoding = THREE.sRGBEncoding;
+          }
+        }
+        resolve(texture);
+      },
+      undefined,
+      (error) => reject(error),
+    );
+  });
+}
+
 // Convert lat/lng to 3D sphere position
 function latLngToVector3(lat, lng, radius) {
   const phi = (90 - lat) * (Math.PI / 180);
@@ -765,6 +797,9 @@ export class MapManager {
     this.starField = null;
     this.cloudMesh = null;
     this.labelSprites = [];
+    this._pendingTimeouts = new Set();
+    this._onResize = null;
+    this._isDestroyed = false;
   }
 
   /**
@@ -888,36 +923,46 @@ export class MapManager {
   }
 
   /**
-   * Create the realistic Earth globe with procedural textures
+   * Create the realistic Earth globe with NASA Blue Marble CDN textures.
+   * Falls back to procedural textures only if CDN loading fails.
    */
   createRealisticGlobe() {
-    const texSize = 2048;
-    
-    // Generate textures
-    const earthCanvas = generateEarthTexture(texSize, texSize);
-    const bumpCanvas = generateBumpTexture(texSize, texSize);
-    const specCanvas = generateSpecularTexture(texSize, texSize);
-    
-    const earthTexture = new THREE.CanvasTexture(earthCanvas);
-    earthTexture.anisotropy = 4;
-    
-    const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
-    const specTexture = new THREE.CanvasTexture(specCanvas);
-    
     const globeGeometry = new THREE.SphereGeometry(this.globeRadius, 128, 128);
-    
+
+    // Placeholder material to avoid visual pop while CDN assets load.
     const globeMaterial = new THREE.MeshPhongMaterial({
-      map: earthTexture,
-      bumpMap: bumpTexture,
-      bumpScale: 1.5,
-      specularMap: specTexture,
+      color: 0x1d3f77,
       specular: new THREE.Color(0x333333),
       shininess: 15,
     });
-    
+
     this.globe = new THREE.Mesh(globeGeometry, globeMaterial);
     this.globeGroup.add(this.globe);
-    
+
+    Promise.all([
+      loadTexture(EARTH_TEXTURE_CDN.color, this.renderer, { isColorMap: true }),
+      loadTexture(EARTH_TEXTURE_CDN.bump, this.renderer),
+      loadTexture(EARTH_TEXTURE_CDN.specular, this.renderer),
+    ])
+      .then(([earthTexture, bumpTexture, specTexture]) => {
+        if (this._isDestroyed || !this.globe) return;
+        globeMaterial.map = earthTexture;
+        globeMaterial.bumpMap = bumpTexture;
+        globeMaterial.bumpScale = 1.25;
+        globeMaterial.specularMap = specTexture;
+        globeMaterial.needsUpdate = true;
+      })
+      .catch(() => {
+        if (this._isDestroyed || !this.globe) return;
+        // Fallback keeps app functional when CDN is blocked/offline.
+        const texSize = 2048;
+        globeMaterial.map = new THREE.CanvasTexture(generateEarthTexture(texSize, texSize));
+        globeMaterial.bumpMap = new THREE.CanvasTexture(generateBumpTexture(texSize, texSize));
+        globeMaterial.bumpScale = 1.5;
+        globeMaterial.specularMap = new THREE.CanvasTexture(generateSpecularTexture(texSize, texSize));
+        globeMaterial.needsUpdate = true;
+      });
+
     // Add subtle grid overlay for the cyber aesthetic
     this.createGlobeGrid();
   }
@@ -926,20 +971,28 @@ export class MapManager {
    * Create cloud layer
    */
   createCloudLayer() {
-    const cloudCanvas = generateCloudTexture(1024, 512);
-    const cloudTexture = new THREE.CanvasTexture(cloudCanvas);
-    
     const cloudGeometry = new THREE.SphereGeometry(this.globeRadius + 1.2, 64, 64);
     const cloudMaterial = new THREE.MeshPhongMaterial({
-      map: cloudTexture,
       transparent: true,
       opacity: 0.35,
       depthWrite: false,
       side: THREE.FrontSide,
     });
-    
+
     this.cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
     this.globeGroup.add(this.cloudMesh);
+
+    loadTexture(EARTH_TEXTURE_CDN.clouds, this.renderer, { isColorMap: true })
+      .then((cloudTexture) => {
+        if (this._isDestroyed || !this.cloudMesh) return;
+        cloudMaterial.map = cloudTexture;
+        cloudMaterial.needsUpdate = true;
+      })
+      .catch(() => {
+        if (this._isDestroyed || !this.cloudMesh) return;
+        cloudMaterial.map = new THREE.CanvasTexture(generateCloudTexture(1024, 512));
+        cloudMaterial.needsUpdate = true;
+      });
   }
 
   /**
@@ -1057,6 +1110,24 @@ export class MapManager {
     });
   }
 
+  scheduleTimeout(callback, delay) {
+    const timeoutId = setTimeout(() => {
+      this._pendingTimeouts.delete(timeoutId);
+      if (!this._isDestroyed) {
+        callback();
+      }
+    }, delay);
+    this._pendingTimeouts.add(timeoutId);
+    return timeoutId;
+  }
+
+  queueAutoRotateResume() {
+    clearTimeout(this._autoRotateTimeout);
+    this._autoRotateTimeout = this.scheduleTimeout(() => {
+      this.autoRotate = true;
+    }, 5000);
+  }
+
   /**
    * Setup mouse/touch event listeners for interaction
    */
@@ -1086,20 +1157,14 @@ export class MapManager {
     canvas.addEventListener('mouseup', () => {
       this.isDragging = false;
       canvas.style.cursor = 'grab';
-      clearTimeout(this._autoRotateTimeout);
-      this._autoRotateTimeout = setTimeout(() => {
-        this.autoRotate = true;
-      }, 5000);
+      this.queueAutoRotateResume();
     });
 
     canvas.addEventListener('mouseleave', () => {
       if (this.isDragging) {
         this.isDragging = false;
         canvas.style.cursor = 'grab';
-        clearTimeout(this._autoRotateTimeout);
-        this._autoRotateTimeout = setTimeout(() => {
-          this.autoRotate = true;
-        }, 5000);
+        this.queueAutoRotateResume();
       }
     });
 
@@ -1152,21 +1217,19 @@ export class MapManager {
 
     canvas.addEventListener('touchend', () => {
       this.isDragging = false;
-      clearTimeout(this._autoRotateTimeout);
-      this._autoRotateTimeout = setTimeout(() => {
-        this.autoRotate = true;
-      }, 5000);
+      this.queueAutoRotateResume();
     }, { passive: true });
 
     // Resize
-    window.addEventListener('resize', () => {
+    this._onResize = () => {
       if (!this.container) return;
       const w = this.container.clientWidth;
       const h = this.container.clientHeight;
       this.camera.aspect = w / h;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(w, h);
-    });
+    };
+    window.addEventListener('resize', this._onResize);
   }
 
   /**
@@ -1239,7 +1302,7 @@ export class MapManager {
 
     // Add pulse markers
     this.addPulseMarker(sourcePos, colorObj, 'source', event.severity);
-    setTimeout(() => {
+    this.scheduleTimeout(() => {
       this.addPulseMarker(targetPos, colorObj, 'target', event.severity);
     }, arc.travelDuration * 0.8);
 
@@ -1446,10 +1509,7 @@ export class MapManager {
         sprite.visible = false;
       }
       
-      // Scale labels based on zoom
-      const zoomFactor = 280 / this.zoomLevel;
-      const baseScale = sprite.scale.clone();
-      // Don't actually modify scale each frame, just visibility
+      // Keep current scale fixed; only update visibility/opacities here.
     });
   }
 
@@ -1457,12 +1517,18 @@ export class MapManager {
    * Clean up resources
    */
   destroy() {
+    this._isDestroyed = true;
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
+    }
+    if (this._onResize) {
+      window.removeEventListener('resize', this._onResize);
     }
     if (this.renderer) {
       this.renderer.dispose();
     }
     clearTimeout(this._autoRotateTimeout);
+    this._pendingTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+    this._pendingTimeouts.clear();
   }
 }
