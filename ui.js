@@ -149,15 +149,6 @@ export class UIManager {
   }
 
   /**
-   * Escape HTML to prevent XSS
-   */
-  escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  /**
    * Update the statistics display with smooth counter animation
    */
   updateStats(dataManager) {

@@ -318,44 +318,36 @@ export class DataManager {
    * Initialize data fetching - try live APIs first, fall back to simulation
    */
   async init() {
-    // Try Feodo Tracker (abuse.ch) - real botnet C2 data
-    const feodoSuccess = await this.tryFeodoTrackerFetch();
-    if (feodoSuccess) {
-      this.isLiveMode = true;
-      this.dataSource = 'Feodo Tracker by abuse.ch (Botnet C2 Intelligence)';
-      this.lastFetchTime = new Date();
-      // Also try URLhaus for additional data
-      await this.tryURLhausFetch();
-      // Set up periodic fetching
-      this.fetchInterval = setInterval(async () => {
-        await this.tryFeodoTrackerFetch();
-        await this.tryURLhausFetch();
-        this.lastFetchTime = new Date();
-      }, 120000);
-      return;
-    }
+    // Try all live sources concurrently to reduce "stuck connecting" time.
+    const [feodoSuccess, urlhausSuccess, threatfoxSuccess] = await Promise.all([
+      this.tryFeodoTrackerFetch(),
+      this.tryURLhausFetch(),
+      this.tryThreatFoxFetch(),
+    ]);
 
-    // Try URLhaus alone
-    const urlhausSuccess = await this.tryURLhausFetch();
-    if (urlhausSuccess) {
+    if (feodoSuccess || urlhausSuccess || threatfoxSuccess) {
       this.isLiveMode = true;
-      this.dataSource = 'URLhaus by abuse.ch (Malware URL Intelligence)';
       this.lastFetchTime = new Date();
-      this.fetchInterval = setInterval(async () => {
-        await this.tryURLhausFetch();
-        this.lastFetchTime = new Date();
-      }, 120000);
-      return;
-    }
 
-    // Try ThreatFox
-    const threatfoxSuccess = await this.tryThreatFoxFetch();
-    if (threatfoxSuccess) {
-      this.isLiveMode = true;
-      this.dataSource = 'ThreatFox by abuse.ch (IOC Intelligence)';
-      this.lastFetchTime = new Date();
+      if (feodoSuccess && urlhausSuccess && threatfoxSuccess) {
+        this.dataSource = 'abuse.ch Multi-Feed (Feodo + URLhaus + ThreatFox)';
+      } else if (feodoSuccess && urlhausSuccess) {
+        this.dataSource = 'abuse.ch Dual Feed (Feodo + URLhaus)';
+      } else if (feodoSuccess) {
+        this.dataSource = 'Feodo Tracker by abuse.ch (Botnet C2 Intelligence)';
+      } else if (urlhausSuccess) {
+        this.dataSource = 'URLhaus by abuse.ch (Malware URL Intelligence)';
+      } else {
+        this.dataSource = 'ThreatFox by abuse.ch (IOC Intelligence)';
+      }
+
+      // Periodic refresh; fetch all and keep whichever source remains reachable.
       this.fetchInterval = setInterval(async () => {
-        await this.tryThreatFoxFetch();
+        await Promise.all([
+          this.tryFeodoTrackerFetch(),
+          this.tryURLhausFetch(),
+          this.tryThreatFoxFetch(),
+        ]);
         this.lastFetchTime = new Date();
       }, 120000);
       return;
@@ -377,7 +369,7 @@ export class DataManager {
     try {
       const response = await fetch(url, {
         ...options,
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(3500),
       });
       if (response.ok) return response;
     } catch (e) {
@@ -389,7 +381,7 @@ export class DataManager {
       try {
         const proxyUrl = proxy + encodeURIComponent(url);
         const response = await fetch(proxyUrl, {
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(5000),
         });
         if (response.ok) return response;
       } catch (e) {

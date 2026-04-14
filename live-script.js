@@ -1,56 +1,75 @@
 /**
- * script.js - Main entry point for Cyber Attack Map
- * Initializes the globe and starts simulated attack events
+ * live-script.js - Main runtime for live threat map page.
+ * Wires together globe rendering, data ingestion, and UI updates.
  */
 
 import { MapManager } from './map.js';
-import { generateRandomAttack } from './data.js';
+import { DataManager } from './data.js';
+import { UIManager } from './ui.js';
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize the globe (async - loads textures)
-  const map = new MapManager('globe-container');
-  await map.init();
+  const map = new MapManager('map-container').init();
+  const ui = new UIManager().init();
+  const data = new DataManager();
 
-  // Stats counters
-  let attackCount = 0;
-  let activeThreats = 0;
+  // Forward incoming events to globe + feed.
+  data.onNewEvent((event) => {
+    map.addAttackEvent(event);
+    ui.addEventToFeed(event);
 
-  const attackCountEl = document.getElementById('attack-count');
-  const activeThreatsEl = document.getElementById('active-threats');
+    if (event.severity === 'critical') {
+      ui.showNotification(
+        `CRITICAL ${event.attackType.toUpperCase()}: ${event.source.countryName} → ${event.target.countryName}`,
+        'warning'
+      );
+    }
+  });
 
-  function updateStats() {
-    attackCount++;
-    activeThreats = Math.min(map.attackArcs.length + map.pulseMarkers.length, 999);
-    if (attackCountEl) attackCountEl.textContent = attackCount.toLocaleString();
-    if (activeThreatsEl) activeThreatsEl.textContent = activeThreats;
-  }
-
-  // Launch attacks at random intervals
-  function scheduleAttack() {
-    const delay = 400 + Math.random() * 1200;
-    setTimeout(() => {
-      const event = generateRandomAttack();
-      map.addAttackEvent(event);
-      updateStats();
-      scheduleAttack();
-    }, delay);
-  }
-
-  // Start with a burst of initial attacks
-  for (let i = 0; i < 8; i++) {
-    setTimeout(() => {
-      const event = generateRandomAttack();
-      map.addAttackEvent(event);
-      updateStats();
-    }, i * 300);
-  }
-
-  // Continue with random attacks
-  setTimeout(scheduleAttack, 3000);
-
-  // Periodic active threats update
-  setInterval(() => {
-    activeThreats = map.attackArcs.length + map.pulseMarkers.length;
-    if (activeThreatsEl) activeThreatsEl.textContent = activeThreats;
+  // Keep dashboard counters and status fresh.
+  const uiTick = setInterval(() => {
+    ui.updateStats(data);
   }, 1000);
+
+  // If initialization takes too long, immediately switch to simulation UX.
+  const initTimeoutMs = 15000;
+  const initResult = await Promise.race([
+    data.init().then(() => 'ok'),
+    wait(initTimeoutMs).then(() => 'timeout'),
+  ]);
+
+  if (initResult === 'timeout' && !data.isLiveMode && !data.isSimulationMode) {
+    data.isSimulationMode = true;
+    data.dataSource = 'SIMULATION — Fallback mode (connection timeout)';
+    data.startSimulationMode();
+    ui.showNotification('Live feed timeout. Switched to simulation mode.', 'warning');
+  }
+
+  // Initial paint right after mode is set.
+  ui.updateStats(data);
+
+  // Hook globe overlay controls.
+  window.addEventListener('globe-zoom', (e) => {
+    const direction = e?.detail?.direction;
+    if (direction === 'in') {
+      map.targetZoom = Math.max(map.minZoom, map.targetZoom - 25);
+    } else if (direction === 'out') {
+      map.targetZoom = Math.min(map.maxZoom, map.targetZoom + 25);
+    }
+  });
+
+  window.addEventListener('globe-reset', () => {
+    map.targetZoom = 280;
+    map.targetRotation = { x: 0.3, y: -0.5 };
+    map.autoRotate = true;
+  });
+
+  window.addEventListener('beforeunload', () => {
+    clearInterval(uiTick);
+    data.destroy();
+    map.destroy();
+  });
 });
