@@ -1,8 +1,9 @@
 /**
  * map.js - Three.js 3D Realistic Earth Globe for Cyber Attack Map
  * 
- * Uses NASA Earth texture for accurate continent rendering,
- * with country labels, attack arc animations, and polished visuals.
+ * Renders a photorealistic 3D Earth globe using NASA Blue Marble textures
+ * loaded from CDN, with bump mapping for terrain, specular highlights on oceans,
+ * cloud layer, country labels, attack arc animations, pulse markers, and smooth controls.
  */
 
 import { ATTACK_TYPES } from './data.js';
@@ -17,60 +18,80 @@ function latLngToVector3(lat, lng, radius) {
   return new THREE.Vector3(x, y, z);
 }
 
-// Create a curved arc between two points on the globe
+// Create a curved line between two points on the globe
 function createArcCurve(start, end, radius, arcHeight) {
   const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
   const dist = start.distanceTo(end);
   mid.normalize().multiplyScalar(radius + dist * arcHeight);
-  return new THREE.QuadraticBezierCurve3(start, mid, end);
+  const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+  return curve;
 }
 
 /**
- * Country labels - curated ~40 major countries, well-positioned
+ * Country label data - major countries with their lat/lng positions
  */
 const COUNTRY_LABELS = [
-  { name: 'United States', lat: 39.0, lng: -98.0, size: 1.0 },
-  { name: 'Canada', lat: 58.0, lng: -100.0, size: 0.9 },
-  { name: 'Mexico', lat: 24.0, lng: -102.0, size: 0.7 },
-  { name: 'Brazil', lat: -10.0, lng: -52.0, size: 1.0 },
-  { name: 'Argentina', lat: -35.0, lng: -64.0, size: 0.7 },
-  { name: 'Colombia', lat: 4.0, lng: -72.0, size: 0.5 },
-  { name: 'Peru', lat: -10.0, lng: -76.0, size: 0.5 },
-  { name: 'Chile', lat: -33.0, lng: -71.0, size: 0.45 },
-  { name: 'Greenland', lat: 72.0, lng: -40.0, size: 0.55 },
-  { name: 'Russia', lat: 62.0, lng: 95.0, size: 1.0 },
-  { name: 'Germany', lat: 51.0, lng: 10.0, size: 0.5 },
-  { name: 'France', lat: 46.5, lng: 2.5, size: 0.5 },
-  { name: 'UK', lat: 54.0, lng: -2.0, size: 0.45 },
-  { name: 'Spain', lat: 40.0, lng: -3.5, size: 0.45 },
-  { name: 'Italy', lat: 42.5, lng: 12.5, size: 0.4 },
-  { name: 'Poland', lat: 52.0, lng: 19.5, size: 0.4 },
-  { name: 'Ukraine', lat: 49.0, lng: 32.0, size: 0.45 },
-  { name: 'Sweden', lat: 62.0, lng: 16.0, size: 0.4 },
-  { name: 'Norway', lat: 64.0, lng: 10.0, size: 0.35 },
-  { name: 'Iceland', lat: 65.0, lng: -19.0, size: 0.3 },
-  { name: 'Egypt', lat: 27.0, lng: 30.0, size: 0.55 },
-  { name: 'Nigeria', lat: 9.5, lng: 8.0, size: 0.5 },
-  { name: 'South Africa', lat: -29.0, lng: 25.0, size: 0.55 },
-  { name: 'Algeria', lat: 28.0, lng: 2.0, size: 0.55 },
-  { name: 'DR Congo', lat: -3.0, lng: 23.0, size: 0.5 },
-  { name: 'Kenya', lat: 0.5, lng: 38.0, size: 0.4 },
-  { name: 'China', lat: 35.0, lng: 103.0, size: 1.0 },
-  { name: 'India', lat: 22.0, lng: 79.0, size: 0.9 },
-  { name: 'Japan', lat: 36.5, lng: 138.5, size: 0.55 },
-  { name: 'South Korea', lat: 36.0, lng: 128.0, size: 0.35 },
-  { name: 'Indonesia', lat: -2.0, lng: 118.0, size: 0.65 },
-  { name: 'Turkey', lat: 39.5, lng: 35.0, size: 0.5 },
-  { name: 'Saudi Arabia', lat: 24.0, lng: 44.0, size: 0.6 },
-  { name: 'Iran', lat: 33.0, lng: 53.0, size: 0.55 },
-  { name: 'Pakistan', lat: 30.0, lng: 69.0, size: 0.5 },
-  { name: 'Thailand', lat: 15.0, lng: 101.0, size: 0.4 },
-  { name: 'Vietnam', lat: 16.0, lng: 108.0, size: 0.35 },
-  { name: 'Philippines', lat: 12.0, lng: 122.0, size: 0.35 },
-  { name: 'Kazakhstan', lat: 48.0, lng: 67.0, size: 0.6 },
-  { name: 'Mongolia', lat: 47.0, lng: 104.0, size: 0.5 },
-  { name: 'Australia', lat: -25.0, lng: 134.0, size: 0.9 },
-  { name: 'New Zealand', lat: -42.0, lng: 173.0, size: 0.35 },
+  { name: 'United States', lat: 39.8, lng: -98.5, size: 1 },
+  { name: 'Canada', lat: 56.1, lng: -106.3, size: 0.8 },
+  { name: 'Brazil', lat: -14.2, lng: -51.9, size: 1 },
+  { name: 'Argentina', lat: -38.4, lng: -63.6, size: 0.7 },
+  { name: 'Mexico', lat: 23.6, lng: -102.5, size: 0.7 },
+  { name: 'Russia', lat: 61.5, lng: 105.3, size: 1 },
+  { name: 'China', lat: 35.8, lng: 104.1, size: 1 },
+  { name: 'India', lat: 20.6, lng: 78.9, size: 0.9 },
+  { name: 'Japan', lat: 36.2, lng: 138.2, size: 0.7 },
+  { name: 'Australia', lat: -25.3, lng: 133.8, size: 0.9 },
+  { name: 'Germany', lat: 51.2, lng: 10.4, size: 0.6 },
+  { name: 'France', lat: 46.2, lng: 2.2, size: 0.6 },
+  { name: 'UK', lat: 55.4, lng: -3.4, size: 0.6 },
+  { name: 'Italy', lat: 41.9, lng: 12.6, size: 0.5 },
+  { name: 'Spain', lat: 40.5, lng: -3.7, size: 0.6 },
+  { name: 'South Korea', lat: 35.9, lng: 127.8, size: 0.5 },
+  { name: 'Indonesia', lat: -0.8, lng: 113.9, size: 0.8 },
+  { name: 'Turkey', lat: 39.0, lng: 35.2, size: 0.6 },
+  { name: 'Saudi Arabia', lat: 23.9, lng: 45.1, size: 0.7 },
+  { name: 'South Africa', lat: -30.6, lng: 22.9, size: 0.7 },
+  { name: 'Nigeria', lat: 9.1, lng: 8.7, size: 0.6 },
+  { name: 'Egypt', lat: 26.8, lng: 30.8, size: 0.6 },
+  { name: 'Iran', lat: 32.4, lng: 53.7, size: 0.6 },
+  { name: 'Pakistan', lat: 30.4, lng: 69.3, size: 0.6 },
+  { name: 'Thailand', lat: 15.9, lng: 100.9, size: 0.5 },
+  { name: 'Vietnam', lat: 14.1, lng: 108.3, size: 0.5 },
+  { name: 'Philippines', lat: 12.9, lng: 121.8, size: 0.5 },
+  { name: 'Colombia', lat: 4.6, lng: -74.3, size: 0.6 },
+  { name: 'Peru', lat: -9.2, lng: -75.0, size: 0.6 },
+  { name: 'Chile', lat: -35.7, lng: -71.5, size: 0.5 },
+  { name: 'Ukraine', lat: 48.4, lng: 31.2, size: 0.5 },
+  { name: 'Poland', lat: 51.9, lng: 19.1, size: 0.5 },
+  { name: 'Sweden', lat: 60.1, lng: 18.6, size: 0.5 },
+  { name: 'Norway', lat: 60.5, lng: 8.5, size: 0.5 },
+  { name: 'Finland', lat: 61.9, lng: 25.7, size: 0.5 },
+  { name: 'Netherlands', lat: 52.1, lng: 5.3, size: 0.4 },
+  { name: 'Singapore', lat: 1.4, lng: 103.8, size: 0.4 },
+  { name: 'New Zealand', lat: -40.9, lng: 174.9, size: 0.5 },
+  { name: 'Kenya', lat: -0.02, lng: 37.9, size: 0.5 },
+  { name: 'Morocco', lat: 31.8, lng: -7.1, size: 0.5 },
+  { name: 'Algeria', lat: 28.0, lng: 1.7, size: 0.6 },
+  { name: 'Libya', lat: 26.3, lng: 17.2, size: 0.5 },
+  { name: 'DR Congo', lat: -4.0, lng: 21.8, size: 0.6 },
+  { name: 'Mongolia', lat: 46.9, lng: 103.8, size: 0.6 },
+  { name: 'Kazakhstan', lat: 48.0, lng: 68.0, size: 0.7 },
+  { name: 'Greenland', lat: 71.7, lng: -42.6, size: 0.6 },
+  { name: 'Iceland', lat: 64.9, lng: -19.0, size: 0.4 },
+  { name: 'Madagascar', lat: -18.8, lng: 46.9, size: 0.5 },
+  { name: 'Cuba', lat: 21.5, lng: -77.8, size: 0.4 },
+  { name: 'Bangladesh', lat: 23.7, lng: 90.4, size: 0.5 },
+  { name: 'Myanmar', lat: 21.9, lng: 96.0, size: 0.5 },
+  { name: 'Malaysia', lat: 4.2, lng: 101.9, size: 0.5 },
+  { name: 'Taiwan', lat: 23.7, lng: 121.0, size: 0.4 },
+  { name: 'Israel', lat: 31.0, lng: 34.9, size: 0.4 },
+  { name: 'Romania', lat: 45.9, lng: 24.9, size: 0.5 },
+  { name: 'Greece', lat: 39.1, lng: 21.8, size: 0.4 },
+  { name: 'Portugal', lat: 39.4, lng: -8.2, size: 0.4 },
+  { name: 'Ireland', lat: 53.1, lng: -7.7, size: 0.4 },
+  { name: 'Switzerland', lat: 46.8, lng: 8.2, size: 0.4 },
+  { name: 'Austria', lat: 47.5, lng: 14.6, size: 0.4 },
+  { name: 'Czech Republic', lat: 49.8, lng: 15.5, size: 0.4 },
 ];
 
 /**
@@ -79,21 +100,21 @@ const COUNTRY_LABELS = [
 function createTextSprite(text, fontSize, color) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
-
-  const scale = 2;
+  
+  const scale = 2; // retina
   const fSize = fontSize * scale;
-
-  ctx.font = `600 ${fSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
+  
+  ctx.font = `bold ${fSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
   const metrics = ctx.measureText(text);
-  const textWidth = metrics.width + 12 * scale;
-  const textHeight = fSize * 1.5;
-
+  const textWidth = metrics.width + 8 * scale;
+  const textHeight = fSize * 1.4;
+  
   canvas.width = textWidth;
   canvas.height = textHeight;
-
-  // Background pill
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
-  const r = 4 * scale;
+  
+  // Background
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+  const r = 3 * scale;
   ctx.beginPath();
   ctx.moveTo(r, 0);
   ctx.lineTo(textWidth - r, 0);
@@ -106,285 +127,113 @@ function createTextSprite(text, fontSize, color) {
   ctx.quadraticCurveTo(0, 0, r, 0);
   ctx.closePath();
   ctx.fill();
-
-  // Subtle border
-  ctx.strokeStyle = 'rgba(0, 255, 136, 0.15)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
+  
   // Text
-  ctx.font = `600 ${fSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-  ctx.shadowBlur = 4;
-  ctx.fillStyle = color || 'rgba(255, 255, 255, 0.9)';
+  ctx.font = `bold ${fSize}px 'Inter', 'Segoe UI', Arial, sans-serif`;
+  ctx.fillStyle = color || 'rgba(255, 255, 255, 0.85)';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, textWidth / 2, textHeight / 2);
-
+  
   const texture = new THREE.CanvasTexture(canvas);
   texture.minFilter = THREE.LinearFilter;
   texture.magFilter = THREE.LinearFilter;
-
+  
   const material = new THREE.SpriteMaterial({
     map: texture,
     transparent: true,
     depthTest: false,
     depthWrite: false,
   });
-
+  
   const sprite = new THREE.Sprite(material);
   const aspect = textWidth / textHeight;
-  const spriteScale = fontSize * 0.13;
+  const spriteScale = fontSize * 0.15;
   sprite.scale.set(spriteScale * aspect, spriteScale, 1);
-
+  
   return sprite;
 }
 
 /**
- * Load texture with fallback - tries NASA texture URL, falls back to procedural
+ * NASA Blue Marble texture URLs from reliable CDN sources
  */
-function loadEarthTexture() {
-  return new Promise((resolve) => {
+const TEXTURE_URLS = {
+  // Earth day map - NASA Blue Marble (high quality)
+  earth: 'https://unpkg.com/three-globe@2.41.12/example/img/earth-blue-marble.jpg',
+  // Bump/topology map
+  bump: 'https://unpkg.com/three-globe@2.41.12/example/img/earth-topology.png',
+  // Water/specular map (shows where oceans are for specular reflection)
+  water: 'https://unpkg.com/three-globe@2.41.12/example/img/earth-water.png',
+  // Cloud layer
+  clouds: 'https://unpkg.com/three-globe@2.41.12/example/img/earth-clouds.png',
+  // Night lights (optional, for dark side)
+  night: 'https://unpkg.com/three-globe@2.41.12/example/img/earth-night.jpg',
+};
+
+/**
+ * Load a texture from URL with fallback
+ * Returns a promise that resolves to the texture
+ */
+function loadTexture(url) {
+  return new Promise((resolve, reject) => {
     const loader = new THREE.TextureLoader();
-    // Use a reliable NASA Blue Marble texture
-    const urls = [
-      'https://unpkg.com/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
-      'https://unpkg.com/three-globe@2.24.1/example/img/earth-blue-marble.jpg',
-      'https://raw.githubusercontent.com/turban/webgl-earth/master/images/2_no_clouds_4k.jpg',
-    ];
-
-    let attempted = 0;
-
-    function tryLoad() {
-      if (attempted >= urls.length) {
-        // Fallback: generate procedural texture
-        resolve(generateFallbackTexture());
-        return;
+    loader.crossOrigin = 'anonymous';
+    loader.load(
+      url,
+      (texture) => {
+        texture.anisotropy = 4;
+        resolve(texture);
+      },
+      undefined,
+      (err) => {
+        console.warn('Failed to load texture:', url, err);
+        reject(err);
       }
-      loader.load(
-        urls[attempted],
-        (texture) => {
-          texture.anisotropy = 4;
-          resolve(texture);
-        },
-        undefined,
-        () => {
-          attempted++;
-          tryLoad();
-        }
-      );
-    }
-
-    tryLoad();
-  });
-}
-
-function loadBumpTexture() {
-  return new Promise((resolve) => {
-    const loader = new THREE.TextureLoader();
-    const urls = [
-      'https://unpkg.com/three-globe@2.31.1/example/img/earth-topology.png',
-      'https://unpkg.com/three-globe@2.24.1/example/img/earth-topology.png',
-    ];
-    let attempted = 0;
-    function tryLoad() {
-      if (attempted >= urls.length) {
-        resolve(null);
-        return;
-      }
-      loader.load(urls[attempted], (tex) => resolve(tex), undefined, () => { attempted++; tryLoad(); });
-    }
-    tryLoad();
-  });
-}
-
-function loadWaterTexture() {
-  return new Promise((resolve) => {
-    const loader = new THREE.TextureLoader();
-    const urls = [
-      'https://unpkg.com/three-globe@2.31.1/example/img/earth-water.png',
-      'https://unpkg.com/three-globe@2.24.1/example/img/earth-water.png',
-    ];
-    let attempted = 0;
-    function tryLoad() {
-      if (attempted >= urls.length) {
-        resolve(null);
-        return;
-      }
-      loader.load(urls[attempted], (tex) => resolve(tex), undefined, () => { attempted++; tryLoad(); });
-    }
-    tryLoad();
-  });
-}
-
-function loadCloudTexture() {
-  return new Promise((resolve) => {
-    const loader = new THREE.TextureLoader();
-    const urls = [
-      'https://unpkg.com/three-globe@2.31.1/example/img/earth-clouds.png',
-      'https://unpkg.com/three-globe@2.24.1/example/img/earth-clouds.png',
-    ];
-    let attempted = 0;
-    function tryLoad() {
-      if (attempted >= urls.length) {
-        resolve(generateProceduralClouds());
-        return;
-      }
-      loader.load(urls[attempted], (tex) => resolve(tex), undefined, () => { attempted++; tryLoad(); });
-    }
-    tryLoad();
+    );
   });
 }
 
 /**
- * Fallback procedural Earth texture if CDN textures fail
+ * Generate a simple fallback cloud texture using canvas (used if CDN fails)
  */
-function generateFallbackTexture() {
-  const w = 2048, h = 1024;
+function generateFallbackCloudTexture(width, height) {
   const canvas = document.createElement('canvas');
-  canvas.width = w; canvas.height = h;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext('2d');
-
-  // Ocean gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, '#0b1a3a');
-  grad.addColorStop(0.2, '#0a2555');
-  grad.addColorStop(0.5, '#0e3570');
-  grad.addColorStop(0.8, '#0a2555');
-  grad.addColorStop(1, '#0b1a3a');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
-
-  function lngToX(lng) { return ((lng + 180) / 360) * w; }
-  function latToY(lat) { return ((90 - lat) / 180) * h; }
-
-  function drawShape(coords, color) {
-    ctx.beginPath();
-    ctx.moveTo(lngToX(coords[0][1]), latToY(coords[0][0]));
-    for (let i = 1; i < coords.length; i++) {
-      ctx.lineTo(lngToX(coords[i][1]), latToY(coords[i][0]));
-    }
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-  }
-
-  // Simplified but cleaner continent shapes using [lat, lng] pairs
-  // North America
-  drawShape([
-    [70,-140],[68,-130],[62,-110],[55,-80],[48,-65],[45,-67],[42,-70],[40,-74],
-    [38,-76],[35,-78],[33,-85],[30,-88],[28,-82],[25,-80],[25,-97],[26,-100],
-    [28,-108],[30,-112],[33,-118],[35,-120],[38,-122],[42,-124],[45,-124],
-    [48,-124],[49,-125],[50,-128],[55,-132],[60,-140],[65,-145],[68,-155],[70,-160]
-  ], '#1e6b35');
-
-  // South America
-  drawShape([
-    [12,-72],[10,-68],[8,-63],[5,-58],[2,-51],[0,-50],[-5,-45],[-10,-38],
-    [-15,-39],[-20,-41],[-25,-43],[-30,-50],[-35,-57],[-40,-62],[-45,-66],
-    [-50,-72],[-55,-70],[-55,-68],[-50,-65],[-45,-62],[-40,-58],[-35,-52],
-    [-30,-48],[-25,-45],[-20,-42],[-15,-40],[-10,-38],[-5,-35],[0,-50],
-    [5,-55],[8,-60],[10,-65]
-  ], '#1a6b35');
-
-  // Africa
-  drawShape([
-    [37,-10],[35,-5],[32,0],[28,5],[22,10],[15,15],[10,12],[5,10],[0,10],
-    [-5,12],[-10,15],[-15,20],[-20,28],[-25,32],[-30,30],[-35,26],[-35,18],
-    [-30,16],[-25,15],[-20,20],[-15,30],[-10,38],[-5,42],[0,45],[5,48],
-    [10,50],[15,50],[20,45],[25,40],[28,35],[30,33],[32,28],[35,20]
-  ], '#c4a35a');
-
-  // Europe
-  drawShape([
-    [72,20],[70,28],[68,30],[65,28],[62,25],[60,18],[58,14],[56,10],
-    [54,10],[52,5],[50,-5],[48,-5],[46,-2],[44,0],[42,-2],[40,-5],
-    [37,-8],[36,-6],[37,0],[40,3],[42,5],[44,7],[46,8],[48,8],
-    [50,6],[52,8],[54,14],[56,16],[58,20],[60,24],[62,26],[65,28],
-    [68,26],[70,24]
-  ], '#2d7a3e');
-
-  // Asia (Russia + Central/East Asia)
-  drawShape([
-    [72,30],[70,40],[68,50],[65,60],[62,70],[58,80],[55,90],[52,100],
-    [50,110],[48,120],[45,130],[42,132],[40,130],[38,128],[36,127],
-    [34,110],[32,105],[30,100],[28,95],[26,90],[24,82],[22,78],
-    [20,75],[18,74],[15,73],[12,72],[10,78],[8,77],[8,73],[12,70],
-    [18,68],[22,62],[26,55],[30,48],[34,36],[38,28],[42,28],
-    [46,30],[50,32],[55,35],[60,38],[65,40],[70,35]
-  ], '#6b8c6b');
-
-  // India
-  drawShape([
-    [35,72],[32,74],[28,76],[24,78],[20,80],[16,80],[12,80],[8,78],
-    [8,73],[12,72],[16,73],[20,74],[24,72],[28,70],[32,70]
-  ], '#8a9a3a');
-
-  // Australia
-  drawShape([
-    [-11,131],[-13,136],[-15,140],[-18,145],[-22,148],[-25,152],
-    [-28,153],[-32,152],[-35,150],[-38,146],[-38,142],[-35,138],
-    [-32,130],[-28,122],[-25,118],[-22,115],[-18,116],[-15,120],
-    [-13,126]
-  ], '#b09060');
-
-  // Japan
-  drawShape([[45,142],[42,143],[40,140],[38,138],[36,137],[34,134],[33,132],[34,133],[36,135],[38,137],[40,139],[42,141]], '#2d7a3e');
-
-  // Indonesia islands (simplified)
-  drawShape([[6,95],[2,100],[-2,104],[-6,108],[-8,110],[-6,112],[-2,110],[2,106],[6,100]], '#1a6b35');
-  drawShape([[7,109],[4,112],[0,116],[-3,118],[-4,116],[-2,112],[2,108],[5,108]], '#1a6b35');
-
-  // Greenland
-  drawShape([[84,-38],[82,-28],[78,-18],[74,-20],[70,-25],[66,-40],[62,-48],[60,-52],[62,-54],[66,-54],[70,-52],[74,-48],[78,-44],[82,-40]], '#d0e4f0');
-
-  // Antarctica
-  drawShape([[-65,-180],[-70,-140],[-78,-100],[-85,-60],[-90,0],[-85,60],[-78,100],[-70,140],[-65,180]], '#d8e8f0');
-
-  // New Zealand
-  drawShape([[-35,173],[-38,176],[-41,175],[-41,173],[-38,174]], '#2d7a3e');
-  drawShape([[-41,173],[-44,170],[-47,168],[-47,170],[-44,172]], '#2d7a3e');
-
-  // Madagascar
-  drawShape([[-12,49],[-16,50],[-20,48],[-25,46],[-25,44],[-20,44],[-16,46],[-12,48]], '#1a6b35');
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.anisotropy = 4;
-  return texture;
-}
-
-function generateProceduralClouds() {
-  const w = 1024, h = 512;
-  const canvas = document.createElement('canvas');
-  canvas.width = w; canvas.height = h;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, w, h);
-
-  for (let i = 0; i < 250; i++) {
-    const x = Math.random() * w;
-    const y = Math.random() * h;
-    const lat = 90 - (y / h) * 180;
-    let chance = 0.25;
-    if (Math.abs(lat) < 15) chance = 0.45;
-    if (Math.abs(lat) > 40 && Math.abs(lat) < 60) chance = 0.55;
-    if (Math.random() < chance) {
-      const size = 8 + Math.random() * 45;
-      const opacity = 0.03 + Math.random() * 0.08;
+  
+  ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+  ctx.fillRect(0, 0, width, height);
+  
+  for (let i = 0; i < 400; i++) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const lat = 90 - (y / height) * 180;
+    
+    let cloudChance = 0.3;
+    if (Math.abs(lat) < 15) cloudChance = 0.5;
+    if (Math.abs(lat) > 40 && Math.abs(lat) < 60) cloudChance = 0.6;
+    if (Math.abs(lat) > 70) cloudChance = 0.4;
+    
+    if (Math.random() < cloudChance) {
+      const size = 10 + Math.random() * 60;
+      const opacity = 0.05 + Math.random() * 0.15;
+      
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-      gradient.addColorStop(0, `rgba(255,255,255,${opacity})`);
-      gradient.addColorStop(0.6, `rgba(255,255,255,${opacity * 0.3})`);
-      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      gradient.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
+      gradient.addColorStop(0.5, `rgba(255, 255, 255, ${opacity * 0.5})`);
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      
       ctx.fillStyle = gradient;
       ctx.fillRect(x - size, y - size, size * 2, size * 2);
     }
   }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  return texture;
+  
+  return new THREE.CanvasTexture(canvas);
 }
 
 /**
- * MapManager - handles 3D globe rendering
+ * MapManager handles the 3D globe rendering
  */
 export class MapManager {
   constructor(containerId) {
@@ -403,21 +252,26 @@ export class MapManager {
     this.previousMouse = { x: 0, y: 0 };
     this.rotation = { x: 0.3, y: -0.5 };
     this.targetRotation = { x: 0.3, y: -0.5 };
-    this.autoRotateSpeed = 0.0006;
+    this.autoRotateSpeed = 0.0008;
     this.autoRotate = true;
     this.zoomLevel = 280;
     this.targetZoom = 280;
     this.minZoom = 160;
     this.maxZoom = 500;
     this.globeGroup = null;
+    this.clock = new THREE.Clock();
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
     this.atmosphereMesh = null;
     this.starField = null;
     this.cloudMesh = null;
     this.labelSprites = [];
-    this.texturesLoaded = false;
   }
 
-  async init() {
+  /**
+   * Initialize the Three.js scene with realistic 3D globe
+   */
+  init() {
     this.container = document.getElementById(this.containerId);
     if (!this.container) return this;
 
@@ -441,68 +295,69 @@ export class MapManager {
     this.renderer.setSize(w, h);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.1;
+    this.renderer.toneMappingExposure = 1.2;
     this.container.appendChild(this.renderer.domElement);
 
-    // Globe group
+    // Globe group for rotation
     this.globeGroup = new THREE.Group();
     this.scene.add(this.globeGroup);
 
-    // Create star field first (no async)
+    // Create elements
     this.createStarField();
-
-    // Load textures and build globe
-    await this.createGlobe();
-
-    // Atmosphere (no texture needed)
+    this.createRealisticGlobe();
     this.createAtmosphere();
-
-    // Labels
     this.createCountryLabels();
 
-    // Grid
-    this.createGlobeGrid();
+    // Lighting - simulate sunlight
+    const ambientLight = new THREE.AmbientLight(0x334466, 0.6);
+    this.scene.add(ambientLight);
 
-    // Lighting
-    const ambient = new THREE.AmbientLight(0x334466, 0.5);
-    this.scene.add(ambient);
+    // Main sunlight
+    const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.4);
+    sunLight.position.set(5, 3, 5);
+    this.scene.add(sunLight);
 
-    const sun = new THREE.DirectionalLight(0xfff5e0, 1.3);
-    sun.position.set(5, 3, 5);
-    this.scene.add(sun);
+    // Fill light (opposite side - dimmer, blueish)
+    const fillLight = new THREE.DirectionalLight(0x4466aa, 0.3);
+    fillLight.position.set(-5, -1, -5);
+    this.scene.add(fillLight);
 
-    const fill = new THREE.DirectionalLight(0x4466aa, 0.25);
-    fill.position.set(-5, -1, -5);
-    this.scene.add(fill);
+    // Rim light for atmosphere edge
+    const rimLight = new THREE.DirectionalLight(0x88ccff, 0.2);
+    rimLight.position.set(0, 5, -3);
+    this.scene.add(rimLight);
 
-    const rim = new THREE.DirectionalLight(0x88ccff, 0.15);
-    rim.position.set(0, 5, -3);
-    this.scene.add(rim);
-
+    // Event listeners
     this.setupEventListeners();
+
+    // Start animation
     this.animate();
 
     return this;
   }
 
+  /**
+   * Create star field background
+   */
   createStarField() {
-    const geo = new THREE.BufferGeometry();
-    const count = 3500;
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
+    const starsGeometry = new THREE.BufferGeometry();
+    const starCount = 4000;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+    const sizes = new Float32Array(starCount);
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < starCount; i++) {
       const i3 = i * 3;
       positions[i3] = (Math.random() - 0.5) * 1800;
       positions[i3 + 1] = (Math.random() - 0.5) * 1800;
       positions[i3 + 2] = (Math.random() - 0.5) * 1800;
-
-      const c = Math.random();
-      if (c < 0.6) {
+      
+      const colorChoice = Math.random();
+      if (colorChoice < 0.6) {
         colors[i3] = 0.9 + Math.random() * 0.1;
         colors[i3 + 1] = 0.9 + Math.random() * 0.1;
         colors[i3 + 2] = 1.0;
-      } else if (c < 0.8) {
+      } else if (colorChoice < 0.8) {
         colors[i3] = 0.7 + Math.random() * 0.2;
         colors[i3 + 1] = 0.8 + Math.random() * 0.2;
         colors[i3 + 2] = 1.0;
@@ -511,73 +366,118 @@ export class MapManager {
         colors[i3 + 1] = 0.9 + Math.random() * 0.1;
         colors[i3 + 2] = 0.7 + Math.random() * 0.2;
       }
+      
+      sizes[i] = Math.random() * 1.8 + 0.2;
     }
 
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-    const mat = new THREE.PointsMaterial({
-      size: 0.7,
+    const starsMaterial = new THREE.PointsMaterial({
+      size: 0.8,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.7,
       sizeAttenuation: true,
       vertexColors: true,
     });
 
-    this.starField = new THREE.Points(geo, mat);
+    this.starField = new THREE.Points(starsGeometry, starsMaterial);
     this.scene.add(this.starField);
   }
 
-  async createGlobe() {
-    // Load all textures in parallel
-    const [earthTex, bumpTex, waterTex, cloudTex] = await Promise.all([
-      loadEarthTexture(),
-      loadBumpTexture(),
-      loadWaterTexture(),
-      loadCloudTexture(),
-    ]);
+  /**
+   * Create the realistic Earth globe using NASA Blue Marble textures from CDN
+   */
+  createRealisticGlobe() {
+    const globeGeometry = new THREE.SphereGeometry(this.globeRadius, 128, 128);
 
-    // Earth sphere
-    const globeGeo = new THREE.SphereGeometry(this.globeRadius, 128, 128);
-    const matConfig = {
-      map: earthTex,
-      shininess: 15,
+    // Start with a basic dark blue material as placeholder while textures load
+    const placeholderMaterial = new THREE.MeshPhongMaterial({
+      color: 0x0a2a5e,
       specular: new THREE.Color(0x333333),
-    };
+      shininess: 15,
+    });
 
-    if (bumpTex) {
-      matConfig.bumpMap = bumpTex;
-      matConfig.bumpScale = 1.5;
-    }
-    if (waterTex) {
-      matConfig.specularMap = waterTex;
-    }
-
-    const globeMat = new THREE.MeshPhongMaterial(matConfig);
-    this.globe = new THREE.Mesh(globeGeo, globeMat);
+    this.globe = new THREE.Mesh(globeGeometry, placeholderMaterial);
     this.globeGroup.add(this.globe);
 
-    // Cloud layer
-    if (cloudTex) {
-      const cloudGeo = new THREE.SphereGeometry(this.globeRadius + 1.0, 64, 64);
-      const cloudMat = new THREE.MeshPhongMaterial({
-        map: cloudTex,
-        transparent: true,
-        opacity: 0.2,
-        depthWrite: false,
-        side: THREE.FrontSide,
-      });
-      this.cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
-      this.globeGroup.add(this.cloudMesh);
-    }
+    // Load NASA Blue Marble textures asynchronously
+    this.loadNASATextures();
 
-    this.texturesLoaded = true;
+    // Add subtle grid overlay for the cyber aesthetic
+    this.createGlobeGrid();
   }
 
+  /**
+   * Load NASA Blue Marble textures from CDN and apply them to the globe
+   */
+  async loadNASATextures() {
+    try {
+      // Load all textures in parallel
+      const [earthTexture, bumpTexture, waterTexture] = await Promise.all([
+        loadTexture(TEXTURE_URLS.earth),
+        loadTexture(TEXTURE_URLS.bump).catch(() => null),
+        loadTexture(TEXTURE_URLS.water).catch(() => null),
+      ]);
+
+      // Create the high-quality material with NASA textures
+      const globeMaterial = new THREE.MeshPhongMaterial({
+        map: earthTexture,
+        bumpMap: bumpTexture || undefined,
+        bumpScale: 1.5,
+        specularMap: waterTexture || undefined,
+        specular: new THREE.Color(0x333333),
+        shininess: 15,
+      });
+
+      // Replace the placeholder material
+      if (this.globe) {
+        this.globe.material.dispose();
+        this.globe.material = globeMaterial;
+      }
+
+      console.log('NASA Blue Marble textures loaded successfully');
+
+      // Now load cloud layer
+      this.loadCloudLayer();
+    } catch (err) {
+      console.warn('Failed to load NASA textures, globe will use placeholder color:', err);
+    }
+  }
+
+  /**
+   * Load and create cloud layer from CDN texture
+   */
+  async loadCloudLayer() {
+    let cloudTexture;
+    try {
+      cloudTexture = await loadTexture(TEXTURE_URLS.clouds);
+    } catch {
+      // Fallback to procedural clouds
+      cloudTexture = generateFallbackCloudTexture(1024, 512);
+    }
+
+    const cloudGeometry = new THREE.SphereGeometry(this.globeRadius + 1.2, 64, 64);
+    const cloudMaterial = new THREE.MeshPhongMaterial({
+      map: cloudTexture,
+      transparent: true,
+      opacity: 0.35,
+      depthWrite: false,
+      side: THREE.FrontSide,
+    });
+
+    this.cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
+    this.globeGroup.add(this.cloudMesh);
+  }
+
+  /**
+   * Create atmosphere glow effect
+   */
   createAtmosphere() {
-    // Inner glow
-    const innerGeo = new THREE.SphereGeometry(this.globeRadius + 2.5, 64, 64);
-    const innerMat = new THREE.ShaderMaterial({
+    // Inner atmosphere glow
+    const atmosphereGeometry = new THREE.SphereGeometry(this.globeRadius + 3, 64, 64);
+    const atmosphereMaterial = new THREE.ShaderMaterial({
       vertexShader: `
         varying vec3 vNormal;
         varying vec3 vPosition;
@@ -592,9 +492,14 @@ export class MapManager {
         varying vec3 vPosition;
         void main() {
           vec3 viewDir = normalize(-vPosition);
-          float intensity = pow(0.65 - dot(vNormal, viewDir), 2.5);
-          vec3 color = mix(vec3(0.3, 0.6, 1.0), vec3(0.1, 0.8, 0.6), intensity * 0.3);
-          gl_FragColor = vec4(color, intensity * 0.4);
+          float intensity = pow(0.7 - dot(vNormal, viewDir), 2.5);
+          // Blue atmosphere with slight green tint
+          vec3 atmosphereColor = mix(
+            vec3(0.3, 0.6, 1.0),
+            vec3(0.1, 0.8, 0.6),
+            intensity * 0.3
+          );
+          gl_FragColor = vec4(atmosphereColor, intensity * 0.5);
         }
       `,
       blending: THREE.AdditiveBlending,
@@ -602,12 +507,12 @@ export class MapManager {
       transparent: true,
       depthWrite: false,
     });
-    this.atmosphereMesh = new THREE.Mesh(innerGeo, innerMat);
+    this.atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
     this.globeGroup.add(this.atmosphereMesh);
 
     // Outer glow
-    const outerGeo = new THREE.SphereGeometry(this.globeRadius + 8, 64, 64);
-    const outerMat = new THREE.ShaderMaterial({
+    const outerGlowGeometry = new THREE.SphereGeometry(this.globeRadius + 10, 64, 64);
+    const outerGlowMaterial = new THREE.ShaderMaterial({
       vertexShader: `
         varying vec3 vNormal;
         void main() {
@@ -618,8 +523,8 @@ export class MapManager {
       fragmentShader: `
         varying vec3 vNormal;
         void main() {
-          float intensity = pow(0.4 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
-          gl_FragColor = vec4(0.2, 0.5, 1.0, 1.0) * intensity * 0.1;
+          float intensity = pow(0.45 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+          gl_FragColor = vec4(0.2, 0.5, 1.0, 1.0) * intensity * 0.12;
         }
       `,
       blending: THREE.AdditiveBlending,
@@ -627,48 +532,67 @@ export class MapManager {
       transparent: true,
       depthWrite: false,
     });
-    this.globeGroup.add(new THREE.Mesh(outerGeo, outerMat));
+    const outerGlow = new THREE.Mesh(outerGlowGeometry, outerGlowMaterial);
+    this.globeGroup.add(outerGlow);
   }
 
+  /**
+   * Create subtle latitude/longitude grid lines
+   */
   createGlobeGrid() {
-    const gridMat = new THREE.LineBasicMaterial({
+    const gridMaterial = new THREE.LineBasicMaterial({
       color: 0x00ff88,
       transparent: true,
-      opacity: 0.03,
+      opacity: 0.04,
     });
 
+    // Latitude lines
     for (let lat = -60; lat <= 60; lat += 30) {
-      const pts = [];
+      const points = [];
       for (let lng = 0; lng <= 360; lng += 5) {
-        pts.push(latLngToVector3(lat, lng - 180, this.globeRadius + 0.2));
+        const pos = latLngToVector3(lat, lng - 180, this.globeRadius + 0.3);
+        points.push(pos);
       }
-      this.globeGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), gridMat));
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, gridMaterial);
+      this.globeGroup.add(line);
     }
 
+    // Longitude lines
     for (let lng = -180; lng < 180; lng += 30) {
-      const pts = [];
+      const points = [];
       for (let lat = -90; lat <= 90; lat += 5) {
-        pts.push(latLngToVector3(lat, lng, this.globeRadius + 0.2));
+        const pos = latLngToVector3(lat, lng, this.globeRadius + 0.3);
+        points.push(pos);
       }
-      this.globeGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), gridMat));
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, gridMaterial);
+      this.globeGroup.add(line);
     }
   }
 
+  /**
+   * Create country name labels on the globe
+   */
   createCountryLabels() {
     COUNTRY_LABELS.forEach(country => {
-      const fontSize = 5 + country.size * 5;
-      const sprite = createTextSprite(country.name, fontSize, 'rgba(255, 255, 255, 0.88)');
-      const pos = latLngToVector3(country.lat, country.lng, this.globeRadius + 2.0);
+      const fontSize = 6 + country.size * 4;
+      const sprite = createTextSprite(country.name, fontSize, 'rgba(255, 255, 255, 0.75)');
+      const pos = latLngToVector3(country.lat, country.lng, this.globeRadius + 2.5);
       sprite.position.copy(pos);
-      sprite.userData = { lat: country.lat, lng: country.lng, baseRadius: this.globeRadius + 2.0 };
+      sprite.userData = { lat: country.lat, lng: country.lng, baseRadius: this.globeRadius + 2.5 };
       this.globeGroup.add(sprite);
       this.labelSprites.push(sprite);
     });
   }
 
+  /**
+   * Setup mouse/touch event listeners for interaction
+   */
   setupEventListeners() {
     const canvas = this.renderer.domElement;
 
+    // Mouse events
     canvas.addEventListener('mousedown', (e) => {
       this.isDragging = true;
       this.autoRotate = false;
@@ -679,32 +603,45 @@ export class MapManager {
 
     canvas.addEventListener('mousemove', (e) => {
       if (!this.isDragging) return;
-      const dx = e.clientX - this.previousMouse.x;
-      const dy = e.clientY - this.previousMouse.y;
-      this.targetRotation.y += dx * 0.005;
-      this.targetRotation.x += dy * 0.005;
+      const deltaX = e.clientX - this.previousMouse.x;
+      const deltaY = e.clientY - this.previousMouse.y;
+      this.targetRotation.y += deltaX * 0.005;
+      this.targetRotation.x += deltaY * 0.005;
       this.targetRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.targetRotation.x));
       this.previousMouse.x = e.clientX;
       this.previousMouse.y = e.clientY;
     });
 
-    const stopDrag = () => {
+    canvas.addEventListener('mouseup', () => {
       this.isDragging = false;
       canvas.style.cursor = 'grab';
       clearTimeout(this._autoRotateTimeout);
-      this._autoRotateTimeout = setTimeout(() => { this.autoRotate = true; }, 5000);
-    };
+      this._autoRotateTimeout = setTimeout(() => {
+        this.autoRotate = true;
+      }, 5000);
+    });
 
-    canvas.addEventListener('mouseup', stopDrag);
-    canvas.addEventListener('mouseleave', () => { if (this.isDragging) stopDrag(); });
+    canvas.addEventListener('mouseleave', () => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        canvas.style.cursor = 'grab';
+        clearTimeout(this._autoRotateTimeout);
+        this._autoRotateTimeout = setTimeout(() => {
+          this.autoRotate = true;
+        }, 5000);
+      }
+    });
+
     canvas.style.cursor = 'grab';
 
+    // Wheel zoom
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       this.targetZoom += e.deltaY * 0.3;
       this.targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.targetZoom));
     }, { passive: false });
 
+    // Touch events
     let touchStartDist = 0;
     canvas.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
@@ -723,10 +660,10 @@ export class MapManager {
     canvas.addEventListener('touchmove', (e) => {
       e.preventDefault();
       if (e.touches.length === 1 && this.isDragging) {
-        const dx = e.touches[0].clientX - this.previousMouse.x;
-        const dy = e.touches[0].clientY - this.previousMouse.y;
-        this.targetRotation.y += dx * 0.005;
-        this.targetRotation.x += dy * 0.005;
+        const deltaX = e.touches[0].clientX - this.previousMouse.x;
+        const deltaY = e.touches[0].clientY - this.previousMouse.y;
+        this.targetRotation.y += deltaX * 0.005;
+        this.targetRotation.x += deltaY * 0.005;
         this.targetRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.targetRotation.x));
         this.previousMouse.x = e.touches[0].clientX;
         this.previousMouse.y = e.touches[0].clientY;
@@ -735,7 +672,8 @@ export class MapManager {
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
-        this.targetZoom += (touchStartDist - dist) * 0.5;
+        const delta = touchStartDist - dist;
+        this.targetZoom += delta * 0.5;
         this.targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.targetZoom));
         touchStartDist = dist;
       }
@@ -744,9 +682,12 @@ export class MapManager {
     canvas.addEventListener('touchend', () => {
       this.isDragging = false;
       clearTimeout(this._autoRotateTimeout);
-      this._autoRotateTimeout = setTimeout(() => { this.autoRotate = true; }, 5000);
+      this._autoRotateTimeout = setTimeout(() => {
+        this.autoRotate = true;
+      }, 5000);
     }, { passive: true });
 
+    // Resize
     window.addEventListener('resize', () => {
       if (!this.container) return;
       const w = this.container.clientWidth;
@@ -757,6 +698,9 @@ export class MapManager {
     });
   }
 
+  /**
+   * Add an attack event to the globe
+   */
   addAttackEvent(event) {
     const color = ATTACK_TYPES[event.attackType]?.color || '#00ff88';
     const colorObj = new THREE.Color(color);
@@ -771,28 +715,47 @@ export class MapManager {
     const totalPoints = 80;
     const curvePoints = curve.getPoints(totalPoints);
 
-    const arcGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
-    const arcMat = new THREE.LineBasicMaterial({ color: colorObj, transparent: true, opacity: 0 });
-    const arcLine = new THREE.Line(arcGeo, arcMat);
+    // Create arc line geometry
+    const arcGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
+    const arcMaterial = new THREE.LineBasicMaterial({
+      color: colorObj,
+      transparent: true,
+      opacity: 0,
+      linewidth: 1,
+    });
+    const arcLine = new THREE.Line(arcGeometry, arcMaterial);
     this.globeGroup.add(arcLine);
 
-    const headSize = event.severity === 'critical' ? 1.2 : 0.8;
-    const headGeo = new THREE.SphereGeometry(headSize, 8, 8);
-    const headMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1 });
-    const headMesh = new THREE.Mesh(headGeo, headMat);
+    // Create moving head particle
+    const headGeometry = new THREE.SphereGeometry(event.severity === 'critical' ? 1.2 : 0.8, 8, 8);
+    const headMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 1,
+    });
+    const headMesh = new THREE.Mesh(headGeometry, headMaterial);
     headMesh.position.copy(sourcePos);
     this.globeGroup.add(headMesh);
 
-    const glowSize = event.severity === 'critical' ? 3 : 2;
-    const glowGeo = new THREE.SphereGeometry(glowSize, 8, 8);
-    const glowMat = new THREE.MeshBasicMaterial({ color: colorObj, transparent: true, opacity: 0.4 });
-    const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+    // Create glow around head
+    const glowGeometry = new THREE.SphereGeometry(event.severity === 'critical' ? 3 : 2, 8, 8);
+    const glowMaterial = new THREE.MeshBasicMaterial({
+      color: colorObj,
+      transparent: true,
+      opacity: 0.4,
+    });
+    const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
     glowMesh.position.copy(sourcePos);
     this.globeGroup.add(glowMesh);
 
     const arc = {
-      line: arcLine, head: headMesh, glow: glowMesh,
-      curve, curvePoints, totalPoints, color: colorObj,
+      line: arcLine,
+      head: headMesh,
+      glow: glowMesh,
+      curve: curve,
+      curvePoints: curvePoints,
+      totalPoints: totalPoints,
+      color: colorObj,
       createdAt: performance.now(),
       travelDuration: 2000 + Math.random() * 1500,
       fadeDuration: 1500,
@@ -803,154 +766,232 @@ export class MapManager {
 
     this.attackArcs.push(arc);
 
+    // Add pulse markers
     this.addPulseMarker(sourcePos, colorObj, 'source', event.severity);
     setTimeout(() => {
       this.addPulseMarker(targetPos, colorObj, 'target', event.severity);
     }, arc.travelDuration * 0.8);
 
+    // Limit arcs
     while (this.attackArcs.length > this.maxArcs) {
-      this.removeArc(this.attackArcs.shift());
+      const old = this.attackArcs.shift();
+      this.removeArc(old);
     }
   }
 
+  /**
+   * Add a pulsing marker at a position on the globe
+   */
   addPulseMarker(position, color, type, severity) {
     const size = type === 'source' ? 1.5 : (severity === 'critical' ? 3 : 2);
 
-    const dotGeo = new THREE.SphereGeometry(size * 0.4, 8, 8);
-    const dotMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 1 });
-    const dot = new THREE.Mesh(dotGeo, dotMat);
+    // Inner dot
+    const dotGeometry = new THREE.SphereGeometry(size * 0.4, 8, 8);
+    const dotMaterial = new THREE.MeshBasicMaterial({
+      color: color,
+      transparent: true,
+      opacity: 1,
+    });
+    const dot = new THREE.Mesh(dotGeometry, dotMaterial);
     dot.position.copy(position);
     this.globeGroup.add(dot);
 
-    const ringGeo = new THREE.RingGeometry(size * 0.5, size * 0.7, 32);
-    const ringMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7, side: THREE.DoubleSide });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
+    // Expanding ring
+    const ringGeometry = new THREE.RingGeometry(size * 0.5, size * 0.7, 32);
+    const ringMaterial = new THREE.MeshBasicMaterial({
+      color: color,
+      transparent: true,
+      opacity: 0.7,
+      side: THREE.DoubleSide,
+    });
+    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
     ring.position.copy(position);
     ring.lookAt(new THREE.Vector3(0, 0, 0));
     this.globeGroup.add(ring);
 
-    this.pulseMarkers.push({
-      dot, ring,
+    const marker = {
+      dot: dot,
+      ring: ring,
       createdAt: performance.now(),
       duration: 3000,
       maxScale: 4,
-    });
+    };
+
+    this.pulseMarkers.push(marker);
   }
 
+  /**
+   * Remove an arc's Three.js objects from the scene
+   */
   removeArc(arc) {
-    ['line', 'head', 'glow'].forEach(key => {
-      if (arc[key]) {
-        this.globeGroup.remove(arc[key]);
-        arc[key].geometry.dispose();
-        arc[key].material.dispose();
-      }
-    });
+    if (arc.line) {
+      this.globeGroup.remove(arc.line);
+      arc.line.geometry.dispose();
+      arc.line.material.dispose();
+    }
+    if (arc.head) {
+      this.globeGroup.remove(arc.head);
+      arc.head.geometry.dispose();
+      arc.head.material.dispose();
+    }
+    if (arc.glow) {
+      this.globeGroup.remove(arc.glow);
+      arc.glow.geometry.dispose();
+      arc.glow.material.dispose();
+    }
   }
 
+  /**
+   * Main animation loop
+   */
   animate() {
     this.animationFrame = requestAnimationFrame(() => this.animate());
+
     const now = performance.now();
 
+    // Auto-rotate
     if (this.autoRotate) {
       this.targetRotation.y += this.autoRotateSpeed;
     }
 
+    // Smooth rotation interpolation
     this.rotation.x += (this.targetRotation.x - this.rotation.x) * 0.08;
     this.rotation.y += (this.targetRotation.y - this.rotation.y) * 0.08;
 
+    // Apply rotation to globe group
     this.globeGroup.rotation.x = this.rotation.x;
     this.globeGroup.rotation.y = this.rotation.y;
 
+    // Slowly rotate clouds independently
     if (this.cloudMesh) {
-      this.cloudMesh.rotation.y += 0.00008;
+      this.cloudMesh.rotation.y += 0.0001;
     }
 
+    // Smooth zoom
     this.zoomLevel += (this.targetZoom - this.zoomLevel) * 0.08;
     this.camera.position.z = this.zoomLevel;
 
+    // Update label visibility based on zoom and facing direction
     this.updateLabelVisibility();
 
-    // Update arcs
+    // Update attack arcs
     this.attackArcs = this.attackArcs.filter(arc => {
       const age = now - arc.createdAt;
-      const total = arc.travelDuration + arc.fadeDuration;
-      if (age > total) { this.removeArc(arc); return false; }
+      const totalDuration = arc.travelDuration + arc.fadeDuration;
+
+      if (age > totalDuration) {
+        this.removeArc(arc);
+        return false;
+      }
 
       const travelProgress = Math.min(age / arc.travelDuration, 1);
-      const eased = travelProgress === 1 ? 1 : 1 - Math.pow(2, -10 * travelProgress);
+      const easedProgress = travelProgress === 1 ? 1 : 1 - Math.pow(2, -10 * travelProgress);
 
+      // Update arc line visibility (trail effect)
       if (arc.line) {
         let opacity = 0.8;
         if (age > arc.travelDuration) {
-          opacity = 0.8 * (1 - (age - arc.travelDuration) / arc.fadeDuration);
+          const fadeAge = age - arc.travelDuration;
+          opacity = 0.8 * (1 - fadeAge / arc.fadeDuration);
         }
         arc.line.material.opacity = Math.max(0, opacity);
       }
 
+      // Update head position
       if (arc.head && arc.glow) {
         if (travelProgress < 1) {
-          const pt = arc.curve.getPoint(eased);
-          arc.head.position.copy(pt);
-          arc.glow.position.copy(pt);
+          const point = arc.curve.getPoint(easedProgress);
+          arc.head.position.copy(point);
+          arc.glow.position.copy(point);
           arc.head.material.opacity = 1;
           arc.glow.material.opacity = 0.4;
         } else {
-          const fadeP = (age - arc.travelDuration) / arc.fadeDuration;
-          arc.head.material.opacity = Math.max(0, 1 - fadeP);
-          arc.glow.material.opacity = Math.max(0, 0.4 * (1 - fadeP));
-          arc.glow.scale.setScalar(1 + fadeP * 3);
+          const fadeAge = age - arc.travelDuration;
+          const fadeProgress = fadeAge / arc.fadeDuration;
+          arc.head.material.opacity = Math.max(0, 1 - fadeProgress);
+          arc.glow.material.opacity = Math.max(0, 0.4 * (1 - fadeProgress));
+          const burstScale = 1 + fadeProgress * 3;
+          arc.glow.scale.setScalar(burstScale);
         }
       }
+
       return true;
     });
 
     // Update pulse markers
-    this.pulseMarkers = this.pulseMarkers.filter(m => {
-      const age = now - m.createdAt;
-      if (age > m.duration) {
-        this.globeGroup.remove(m.dot);
-        this.globeGroup.remove(m.ring);
-        m.dot.geometry.dispose(); m.dot.material.dispose();
-        m.ring.geometry.dispose(); m.ring.material.dispose();
+    this.pulseMarkers = this.pulseMarkers.filter(marker => {
+      const age = now - marker.createdAt;
+      if (age > marker.duration) {
+        this.globeGroup.remove(marker.dot);
+        this.globeGroup.remove(marker.ring);
+        marker.dot.geometry.dispose();
+        marker.dot.material.dispose();
+        marker.ring.geometry.dispose();
+        marker.ring.material.dispose();
         return false;
       }
-      const p = age / m.duration;
-      m.dot.material.opacity = Math.max(0, 1 - p);
-      m.ring.scale.setScalar(1 + p * m.maxScale);
-      m.ring.material.opacity = Math.max(0, 0.7 * (1 - p));
+
+      const progress = age / marker.duration;
+      marker.dot.material.opacity = Math.max(0, 1 - progress);
+      const ringScale = 1 + progress * marker.maxScale;
+      marker.ring.scale.setScalar(ringScale);
+      marker.ring.material.opacity = Math.max(0, 0.7 * (1 - progress));
+
       return true;
     });
 
+    // Subtle star rotation
     if (this.starField) {
-      this.starField.rotation.y += 0.00002;
+      this.starField.rotation.y += 0.00003;
+      this.starField.rotation.x += 0.00001;
     }
 
     this.renderer.render(this.scene, this.camera);
   }
 
+  /**
+   * Update label visibility - hide labels on the far side of the globe
+   */
   updateLabelVisibility() {
     if (!this.labelSprites.length) return;
-    const camPos = this.camera.position.clone();
-
+    
+    const cameraPos = this.camera.position.clone();
+    
     this.labelSprites.forEach(sprite => {
+      // Get world position of the sprite
       const worldPos = new THREE.Vector3();
       sprite.getWorldPosition(worldPos);
-      const toCamera = camPos.clone().sub(worldPos).normalize();
+      
+      // Check if the label is facing the camera
+      const toCamera = cameraPos.clone().sub(worldPos).normalize();
       const surfaceNormal = worldPos.clone().normalize();
       const dot = toCamera.dot(surfaceNormal);
-
-      if (dot > 0.15) {
-        sprite.material.opacity = Math.min(1, (dot - 0.15) * 2.5);
+      
+      // Fade based on angle to camera
+      if (dot > 0.1) {
+        sprite.material.opacity = Math.min(1, (dot - 0.1) * 2);
         sprite.visible = true;
       } else {
         sprite.visible = false;
       }
+      
+      // Scale labels based on zoom
+      const zoomFactor = 280 / this.zoomLevel;
+      const baseScale = sprite.scale.clone();
+      // Don't actually modify scale each frame, just visibility
     });
   }
 
+  /**
+   * Clean up resources
+   */
   destroy() {
-    if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
-    if (this.renderer) this.renderer.dispose();
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame);
+    }
+    if (this.renderer) {
+      this.renderer.dispose();
+    }
     clearTimeout(this._autoRotateTimeout);
   }
 }
